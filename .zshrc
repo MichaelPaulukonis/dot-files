@@ -2,7 +2,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/<user-foo>/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -99,44 +99,60 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+export PATH="/usr/local/opt/openjdk/bin:$PATH"
+
+export NVM_DIR="$HOME/.nvm"
+# # [ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+# Lazy load nvm
+# nvm() {
+#   unset -f nvm
+#   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+#   [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+#   nvm "$@"
+# }
+
+
 alias zshconfig="code ~/.zshrc"
-alias ohmyzsh="code ~/.oh-my-zsh"
 alias zshreload="source ~/.zshrc"
+
+alias pawstop="cd ~/projects/pragai-aws && source ~/.pragai-aws/bin/activate"
 
 alias grom="git remote -v | awk '/origin.*push/ {print \$2}' | xargs open"
 alias grum="git remote -v | awk '/upstream.*push/ {print \$2}' | xargs open"
-alias npma="npm audit --json | npx npm-audit-helper"
-alias npmg="npm list -g --depth 0"
-# alias gpr="git remote show upstream | sed -n '/HEAD branch/s/.*: //p' | read foo;  git pull --rebase upstream $foo"
-alias gpr="git pull --rebase upstream main"
-alias repo_update="gcm && gfa && glum && ggpush"
-# the scrips need to be in the PATH
-alias newpr='makeprurl.sh'
-alias tf='terraform'
 
-# which contains
-# git remote -v | awk '/origin.*push/ {print $2}' | awk 'BEGIN { FS = ".git$" } ; { "git rev-parse --abbrev-ref HEAD"|getline d; print $1 "/pull/new/" d}' | xargs open
-# and I also ran 'chmod u+x' on it
-# I could NOT get this to inline in here. AAAAARGH!
+source ~/.iterm2_shell_integration.zsh
 
-function npm-do { (PATH=$(npm bin):$PATH; eval $@;) }
+export PATH="$PATH:/Users/<user-foo>/projects/kumiko"
 export PATH="$PATH:/Users/<user-foo>/scripts"
-alias npmdo=npm-do
 
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(dir rbenv vcs)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs history time)
-POWERLEVEL9K_PROMPT_ON_NEWLINE=true
+# Added by Windsurf
+export PATH="/Users/<user-foo>/.codeium/windsurf/bin:$PATH"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+export PATH="/opt/homebrew/opt/php@8.3/bin:$PATH"
+export PATH="/opt/homebrew/opt/php@8.3/sbin:$PATH"
 
-# Add a space in the first prompt
-POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX="%f"
-# Visual customisation of the second prompt line
-local user_symbol="$"
-if [[ $(print -P "%#") =~ "#" ]]; then
-    user_symbol = "#"
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/opt/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/opt/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/opt/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/opt/anaconda3/bin:$PATH"
+    fi
 fi
-POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="%{%B%F{black}%K{yellow}%} $user_symbol%{%b%f%k%F{yellow}%} %{%f%}"
+unset __conda_setup
+# <<< conda initialize <<<
 
-# export NVM_DIR="$HOME/.nvm"
-# # [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
-# # [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-# source $(brew --prefix nvm)/nvm.sh
+
+# pnpm
+export PNPM_HOME="/Users/<user-foo>/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
