@@ -71,6 +71,10 @@ Max upload 5 MB (server default); script pre-checks and errors readably.
   introspection: only createFolder, renameAsset, deleteAsset, flushTempUploads).
   To "move": download the asset, `upload` to the target folder, `delete-asset`
   the original, update any pages embedding the old path.
+- Never upload assets with `.md`, `.html`, or `.txt` extensions - the router
+  treats those as page paths, so the asset 404s even though the upload succeeds.
+  Rename before upload (`.markdown` works); `rename-asset` refuses extension
+  changes after the fact.
 - Page create/update rejects empty or whitespace-only content ("Page content
   cannot be empty"). For an intentionally blank page use `--content "<!-- -->"`.
 - The API token is full admin. Delete is guarded by `--yes`; keep it that way.
