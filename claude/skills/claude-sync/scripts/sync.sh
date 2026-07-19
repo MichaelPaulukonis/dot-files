@@ -8,6 +8,11 @@ AGENTS_DIR="${CLAUDE_SYNC_AGENTS_DIR:-$HOME/.agents}"
 CLAUDE_JSON="${CLAUDE_SYNC_CLAUDE_JSON:-$HOME/.claude.json}"
 PUBLIC_REPO="${CLAUDE_SYNC_PUBLIC:-$HOME/projects/dot-files}"
 PRIVATE_REPO="${CLAUDE_SYNC_PRIVATE:-$HOME/projects/claude-private}"
+# Canonicalize repo roots so classify()'s prefix match works even when the
+# caller's path traverses a symlink (e.g. macOS /var -> /private/var, which
+# readlink -f resolves away). Safe: both repos must exist for git ops to work.
+PUBLIC_REPO=$(readlink -f -- "$PUBLIC_REPO")
+PRIVATE_REPO=$(readlink -f -- "$PRIVATE_REPO")
 DRY_RUN=0
 [[ "${1:-}" == "--dry-run" ]] && DRY_RUN=1
 
@@ -17,11 +22,15 @@ log() { printf '%s\n' "$*"; }
 classify() {
   local p=$1 target
   if [[ -L $p ]]; then
+    # On macOS, `readlink -f` on a dangling symlink exits 1 but still prints
+    # the canonicalized (nonexistent) path to stdout; that output is
+    # intentionally discarded here via 2>/dev/null + the || fallback, so
+    # `-z $target` (not the command's exit status) is the real dangling check.
     target=$(readlink -f -- "$p" 2>/dev/null) || target=""
     if [[ -z $target || ! -e $target ]]; then
       echo dangling; return
     fi
-    case $target in
+    case "$target" in
       "$PUBLIC_REPO"/*|"$PRIVATE_REPO"/*) echo adopted ;;
       *) echo foreign ;;
     esac
@@ -34,7 +43,7 @@ classify() {
 handle_adopt_item() {
   local src=$1 repo=$2 rel=$3
   [[ -e $src || -L $src ]] || return 0
-  case $(classify "$src") in
+  case "$(classify "$src")" in
     adopted|foreign) ;;
     dangling) log "WARN: dangling symlink: $src" ;;
     new)
@@ -50,7 +59,6 @@ scan_adopt_dir() {
   for item in "$dir"/*; do
     [[ -e $item || -L $item ]] || continue
     name=$(basename "$item")
-    [[ $name == .DS_Store ]] && continue
     handle_adopt_item "$item" "$repo" "$relbase/$name"
   done
 }

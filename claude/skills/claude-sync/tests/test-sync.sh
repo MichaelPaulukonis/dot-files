@@ -71,6 +71,19 @@ assert_absent "vendor not listed"     "vendor-skill"       "$OUT_FILE"
 assert_absent "adopted not listed"    "already-adopted"    "$OUT_FILE"
 assert_grep   "dangling warned"       "WARN: dangling"     "$OUT_FILE"
 
+# The scan log above is silent for both adopted and foreign items, so it
+# can't distinguish a misclassification between the two. Assert classify()'s
+# actual return value for the pre-adopted fixture directly: this is what
+# catches classify() failing to canonicalize $PUBLIC_REPO/$PRIVATE_REPO
+# before comparing against a readlink -f'd (fully canonical) target -- e.g.
+# macOS mktemp -d paths traverse /var -> /private/var.
+CLASSIFY_OUT="$SANDBOX/classify-adopted.txt"
+bash -c '
+  source "$1" >/dev/null 2>&1
+  classify "$2"
+' _ "$SYNC" "$SANDBOX/dotclaude/skills/already-adopted" >"$CLASSIFY_OUT" 2>&1
+assert_grep "already-adopted classifies as adopted" "^adopted$" "$CLASSIFY_OUT"
+
 echo ""
 echo "PASS: $PASS FAIL: $FAIL"
 [ "$FAIL" -eq 0 ]
