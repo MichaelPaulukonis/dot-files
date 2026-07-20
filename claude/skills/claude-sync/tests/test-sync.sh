@@ -91,6 +91,29 @@ OUT_FILE="$SANDBOX/out2.txt"
 assert_absent "ignored item not listed" "my-skill" "$OUT_FILE"
 rm "$SANDBOX/pub/.sync-ignore"
 
+# --- Task 3: adopt flow ---
+# my-skill: answer [a]dopt. CLAUDE.md and RTK.md will also prompt: adopt CLAUDE.md, skip RTK.md.
+# Prompt order follows main(): skills dir first, then CLAUDE.md, then RTK.md.
+printf 'a\na\ns\n' | "$SYNC" >"$SANDBOX/out3.txt" 2>&1
+assert "my-skill moved into repo" test -f "$SANDBOX/pub/claude/skills/my-skill/SKILL.md"
+assert "my-skill symlinked back"  test -L "$SANDBOX/dotclaude/skills/my-skill"
+assert "symlink resolves"        test -e "$SANDBOX/dotclaude/skills/my-skill/SKILL.md"
+assert "CLAUDE.md adopted"       test -f "$SANDBOX/pub/claude/CLAUDE.md"
+assert "RTK.md skipped"          test ! -L "$SANDBOX/dotclaude/RTK.md"
+git -C "$SANDBOX/pub" diff --cached --name-only > "$SANDBOX/staged.txt"
+assert_grep "my-skill staged" "claude/skills/my-skill/SKILL.md" "$SANDBOX/staged.txt"
+
+# secret scan: plant a fake AWS key, answer adopt then refuse override then skip
+mkdir -p "$SANDBOX/dotclaude/skills/leaky"
+echo 'aws_key = "AKIAIOSFODNN7EXAMPLE"' > "$SANDBOX/dotclaude/skills/leaky/SKILL.md"
+printf 'a\nno\ns\ns\n' | "$SYNC" >"$SANDBOX/out4.txt" 2>&1
+assert "leaky not adopted" test ! -L "$SANDBOX/dotclaude/skills/leaky"
+assert_grep "secret warning shown" "possible secrets" "$SANDBOX/out4.txt"
+
+# ignore-forever answer
+printf 'i\ns\n' | "$SYNC" >"$SANDBOX/out5.txt" 2>&1
+assert_grep "leaky in ignore manifest" "claude/skills/leaky" "$SANDBOX/pub/.sync-ignore"
+
 echo ""
 echo "PASS: $PASS FAIL: $FAIL"
 [ "$FAIL" -eq 0 ]

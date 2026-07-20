@@ -28,6 +28,64 @@ ignore_add() { # <repo> <rel>
   log "  ignored forever (recorded in $1/.sync-ignore)"
 }
 
+preview() { # <path>
+  local p=$1
+  if [[ -d $p ]]; then
+    find "$p" -not -name .DS_Store | head -15 | sed 's/^/    /'
+  else
+    head -15 "$p" | sed 's/^/    | /'
+  fi
+}
+
+# secret_scan <path>: 0 = clean, 1 = suspicious content printed
+secret_scan() {
+  local p=$1 hits
+  hits=$(grep -rEIn \
+    -e 'AKIA[0-9A-Z]{16}' \
+    -e '\-\-\-\-\-BEGIN( [A-Z]+)? PRIVATE KEY\-\-\-\-\-' \
+    -e 'ghp_[A-Za-z0-9]{36}' \
+    -e 'xox[baprs]-[0-9A-Za-z-]{10,}' \
+    -e '(api[_-]?key|secret|password|passwd|token)["'"'"']?[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"']{8,}' \
+    -- "$p" 2>/dev/null) || true
+  if [[ -n ${hits:-} ]]; then
+    log "  !! possible secrets:"
+    printf '%s\n' "$hits" | head -10 | sed 's/^/     /'
+    return 1
+  fi
+  return 0
+}
+
+adopt() { # <src> <repo> <rel>
+  local src=$1 repo=$2 rel=$3 dest="$2/$3"
+  mkdir -p "$(dirname "$dest")"
+  mv "$src" "$dest"
+  ln -s "$dest" "$src"
+  git -C "$repo" add "$rel"
+  log "  adopted -> $dest"
+}
+
+prompt_item() { # <src> <repo> <rel>
+  local src=$1 repo=$2 rel=$3 ans ans2 scan_ok=1
+  log ""
+  log "NEW: $src"
+  log "  -> $repo/$rel"
+  preview "$src"
+  secret_scan "$src" || scan_ok=0
+  while true; do
+    read -rp "  [a]dopt / [i]gnore forever / [s]kip: " ans || { log "  (no input, skipping)"; return 0; }
+    case $ans in
+      a)
+        if (( ! scan_ok )); then
+          read -rp "  possible secrets above - adopt anyway? (yes/no): " ans2 || return 0
+          [[ $ans2 == yes ]] || continue
+        fi
+        adopt "$src" "$repo" "$rel"; return 0 ;;
+      i) ignore_add "$repo" "$rel"; return 0 ;;
+      s) return 0 ;;
+    esac
+  done
+}
+
 # classify <path> -> adopted | foreign | dangling | new
 classify() {
   local p=$1 target
@@ -58,7 +116,11 @@ handle_adopt_item() {
     dangling) log "WARN: dangling symlink: $src" ;;
     new)
       is_ignored "$repo" "$rel" && return 0
-      log "NEW: $src -> $repo/$rel"
+      if (( DRY_RUN )); then
+        log "NEW: $src -> $repo/$rel"
+      else
+        prompt_item "$src" "$repo" "$rel"
+      fi
       ;;
   esac
 }
