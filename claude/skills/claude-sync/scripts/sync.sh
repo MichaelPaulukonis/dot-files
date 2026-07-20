@@ -142,6 +142,40 @@ scan_adopt_dir() {
   done
 }
 
+copy_sync() { # <src> <repo> <rel> [label]
+  local src=$1 repo=$2 rel=$3 label="${4:-$1}" dest="$2/$3" ans
+  [[ -e $src ]] || return 0
+  if [[ ! -e $dest ]]; then
+    if (( DRY_RUN )); then log "NEW (copy): $label -> $repo/$rel"; return 0; fi
+    log ""
+    log "NEW (copy-sync): $label -> $repo/$rel"
+    read -rp "  [a]dopt / [s]kip: " ans || return 0
+    [[ $ans == a ]] || return 0
+    mkdir -p "$(dirname "$dest")"
+    cp "$src" "$dest"
+    git -C "$repo" add "$rel"
+    log "  copied"
+  elif ! cmp -s "$src" "$dest"; then
+    log ""
+    log "CHANGED: $rel"
+    diff -u "$dest" "$src" | head -40 || true
+    (( DRY_RUN )) && return 0
+    cp "$src" "$dest"
+    git -C "$repo" add "$rel"
+    log "  updated"
+  fi
+}
+
+sync_mcp_servers() {
+  [[ -f $CLAUDE_JSON ]] || return 0
+  command -v jq >/dev/null 2>&1 || { log "WARN: jq not found, skipping mcpServers extract"; return 0; }
+  local tmp
+  tmp=$(mktemp)
+  jq '{mcpServers: (.mcpServers // {})}' "$CLAUDE_JSON" > "$tmp"
+  copy_sync "$tmp" "$PRIVATE_REPO" "claude/mcp-servers.json" "$CLAUDE_JSON (mcpServers only)"
+  rm -f "$tmp"
+}
+
 main() {
   scan_adopt_dir "$CLAUDE_DIR/skills"        "$PUBLIC_REPO" "claude/skills"
   scan_adopt_dir "$CLAUDE_DIR/commands"      "$PUBLIC_REPO" "claude/commands"
@@ -151,5 +185,11 @@ main() {
   scan_adopt_dir "$AGENTS_DIR/skills"        "$PUBLIC_REPO" "agents/skills"
   handle_adopt_item "$CLAUDE_DIR/CLAUDE.md"  "$PUBLIC_REPO" "claude/CLAUDE.md"
   handle_adopt_item "$CLAUDE_DIR/RTK.md"     "$PUBLIC_REPO" "claude/RTK.md"
+
+  copy_sync "$CLAUDE_DIR/plugins/claude-hud/config.json" "$PUBLIC_REPO"  "claude/plugins/claude-hud/config.json"
+  copy_sync "$CLAUDE_DIR/plugins/installed_plugins.json" "$PUBLIC_REPO"  "claude/plugins/installed_plugins.json"
+  copy_sync "$CLAUDE_DIR/settings.json"                  "$PRIVATE_REPO" "claude/settings.json"
+  copy_sync "$CLAUDE_DIR/settings.local.json"            "$PRIVATE_REPO" "claude/settings.local.json"
+  sync_mcp_servers
 }
 main

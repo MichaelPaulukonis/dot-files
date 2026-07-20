@@ -137,6 +137,15 @@ assert "adopt() rollback leaves nothing in repo" test ! -e "$SANDBOX/pub/claude/
 assert "adopt() reports failure on rollback" test "$RC" -ne 0
 assert_grep "adopt() rollback warning shown" "adopt failed" "$ROLLBACK_OUT"
 
+# rollback-test above was created directly under dotclaude/skills and only
+# exercised via adopt() called directly (not through $SYNC), so it was never
+# adopted, ignored, or removed. Left in place it's a real, unadopted,
+# non-ignored item that later $SYNC subprocess runs would classify as fresh
+# "new" -- silently shifting every subsequent interactive prompt by one and
+# drifting later tasks' plan-assumed printf sequences. Clean it up so the
+# sandbox matches what later tasks assume.
+rm -rf "$SANDBOX/dotclaude/skills/rollback-test"
+
 # --- Important fix: broadened secret regex ---
 # Unit-test secret_scan() directly against the case the reviewer flagged as
 # missed: an uppercase, unquoted .env-style assignment.
@@ -149,6 +158,23 @@ bash -c '
 RC=$?
 assert "uppercase unquoted API_KEY caught" test "$RC" -eq 1
 assert_grep "uppercase unquoted API_KEY warned" "possible secrets" "$ENVSECRET_OUT"
+
+
+# --- Task 4: copy-sync ---
+# Remaining prompts at this point: leaky is ignored, RTK.md still new.
+# Answers: s (RTK.md), a (settings.json first copy), a (mcp extract first copy)
+printf 's\na\na\n' | "$SYNC" >"$SANDBOX/out6.txt" 2>&1
+assert "settings copied"  test -f "$SANDBOX/priv/claude/settings.json"
+assert "settings not symlink at source" test ! -L "$SANDBOX/dotclaude/settings.json"
+assert "mcp extract exists" test -f "$SANDBOX/priv/claude/mcp-servers.json"
+assert_absent "mcp extract drops other keys" '"other"' "$SANDBOX/priv/claude/mcp-servers.json"
+assert_grep "mcp extract has servers" '"wiki"' "$SANDBOX/priv/claude/mcp-servers.json"
+
+# change source, re-run: should show diff and update without prompting
+echo '{"model":"y"}' > "$SANDBOX/dotclaude/settings.json"
+printf 's\n' | "$SYNC" >"$SANDBOX/out7.txt" 2>&1
+assert_grep "diff shown" "CHANGED: claude/settings.json" "$SANDBOX/out7.txt"
+assert_grep "copy updated" '"y"' "$SANDBOX/priv/claude/settings.json"
 
 echo ""
 echo "PASS: $PASS FAIL: $FAIL"
