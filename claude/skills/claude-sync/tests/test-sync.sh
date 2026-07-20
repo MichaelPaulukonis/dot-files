@@ -114,6 +114,42 @@ assert_grep "secret warning shown" "possible secrets" "$SANDBOX/out4.txt"
 printf 'i\ns\n' | "$SYNC" >"$SANDBOX/out5.txt" 2>&1
 assert_grep "leaky in ignore manifest" "claude/skills/leaky" "$SANDBOX/pub/.sync-ignore"
 
+# --- Task 3 fix: adopt() rollback safety ---
+# Unit-test adopt() directly (same pattern as the classify() unit test above)
+# with a fake `ln` shadowing the real one on PATH so the symlink-back step
+# fails after the mv has already succeeded. Proves the mv is rolled back
+# instead of leaving the item stranded, untracked, inside the repo.
+mkdir -p "$SANDBOX/dotclaude/skills/rollback-test"
+echo "rollback me" > "$SANDBOX/dotclaude/skills/rollback-test/SKILL.md"
+FAKEBIN="$SANDBOX/fakebin"
+mkdir -p "$FAKEBIN"
+printf '#!/usr/bin/env bash\nexit 1\n' > "$FAKEBIN/ln"
+chmod +x "$FAKEBIN/ln"
+ROLLBACK_OUT="$SANDBOX/rollback.txt"
+PATH="$FAKEBIN:$PATH" bash -c '
+  source "$1" >/dev/null 2>&1
+  adopt "$2" "$3" "$4"
+' _ "$SYNC" "$SANDBOX/dotclaude/skills/rollback-test" "$SANDBOX/pub" "claude/skills/rollback-test" \
+  </dev/null >"$ROLLBACK_OUT" 2>&1
+RC=$?
+assert "adopt() rollback restores source item" test -f "$SANDBOX/dotclaude/skills/rollback-test/SKILL.md"
+assert "adopt() rollback leaves nothing in repo" test ! -e "$SANDBOX/pub/claude/skills/rollback-test"
+assert "adopt() reports failure on rollback" test "$RC" -ne 0
+assert_grep "adopt() rollback warning shown" "adopt failed" "$ROLLBACK_OUT"
+
+# --- Important fix: broadened secret regex ---
+# Unit-test secret_scan() directly against the case the reviewer flagged as
+# missed: an uppercase, unquoted .env-style assignment.
+echo 'API_KEY=abcdefgh12345678' > "$SANDBOX/envsecret-src.txt"
+ENVSECRET_OUT="$SANDBOX/envsecret.txt"
+bash -c '
+  source "$1" >/dev/null 2>&1
+  secret_scan "$2"
+' _ "$SYNC" "$SANDBOX/envsecret-src.txt" </dev/null >"$ENVSECRET_OUT" 2>&1
+RC=$?
+assert "uppercase unquoted API_KEY caught" test "$RC" -eq 1
+assert_grep "uppercase unquoted API_KEY warned" "possible secrets" "$ENVSECRET_OUT"
+
 echo ""
 echo "PASS: $PASS FAIL: $FAIL"
 [ "$FAIL" -eq 0 ]

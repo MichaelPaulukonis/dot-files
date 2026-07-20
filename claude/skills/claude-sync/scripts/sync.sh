@@ -40,12 +40,12 @@ preview() { # <path>
 # secret_scan <path>: 0 = clean, 1 = suspicious content printed
 secret_scan() {
   local p=$1 hits
-  hits=$(grep -rEIn \
+  hits=$(grep -rEIni \
     -e 'AKIA[0-9A-Z]{16}' \
     -e '\-\-\-\-\-BEGIN( [A-Z]+)? PRIVATE KEY\-\-\-\-\-' \
     -e 'ghp_[A-Za-z0-9]{36}' \
     -e 'xox[baprs]-[0-9A-Za-z-]{10,}' \
-    -e '(api[_-]?key|secret|password|passwd|token)["'"'"']?[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"']{8,}' \
+    -e '(api[_-]?key|secret|password|passwd|token)[[:alnum:]_-]*["'"'"']?[[:space:]]*[:=][[:space:]]*["'"'"']?[^"'"'"'[:space:]]{8,}' \
     -- "$p" 2>/dev/null) || true
   if [[ -n ${hits:-} ]]; then
     log "  !! possible secrets:"
@@ -58,9 +58,13 @@ secret_scan() {
 adopt() { # <src> <repo> <rel>
   local src=$1 repo=$2 rel=$3 dest="$2/$3"
   mkdir -p "$(dirname "$dest")"
-  mv "$src" "$dest"
-  ln -s "$dest" "$src"
-  git -C "$repo" add "$rel"
+  mv "$src" "$dest" || return 1
+  if ! ln -s "$dest" "$src"; then
+    mv "$dest" "$src"   # rollback: restore original location
+    log "  !! adopt failed (couldn't symlink back), left in place"
+    return 1
+  fi
+  git -C "$repo" add "$rel" || log "  !! adopted but 'git add' failed - stage manually"
   log "  adopted -> $dest"
 }
 
@@ -79,9 +83,11 @@ prompt_item() { # <src> <repo> <rel>
           read -rp "  possible secrets above - adopt anyway? (yes/no): " ans2 || return 0
           [[ $ans2 == yes ]] || continue
         fi
-        adopt "$src" "$repo" "$rel"; return 0 ;;
+        adopt "$src" "$repo" "$rel" || true
+        return 0 ;;
       i) ignore_add "$repo" "$rel"; return 0 ;;
       s) return 0 ;;
+      *) log "  please answer a, i, or s" ;;
     esac
   done
 }
