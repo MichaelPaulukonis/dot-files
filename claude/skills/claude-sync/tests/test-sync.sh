@@ -84,6 +84,13 @@ bash -c '
 ' _ "$SYNC" "$SANDBOX/dotclaude/skills/already-adopted" >"$CLASSIFY_OUT" 2>&1
 assert_grep "already-adopted classifies as adopted" "^adopted$" "$CLASSIFY_OUT"
 
+# --- Task 2: ignore manifest ---
+echo "claude/skills/my-skill" >> "$SANDBOX/pub/.sync-ignore"
+OUT_FILE="$SANDBOX/out2.txt"
+"$SYNC" --dry-run >"$OUT_FILE" 2>&1
+assert_absent "ignored item not listed" "my-skill" "$OUT_FILE"
+rm "$SANDBOX/pub/.sync-ignore"
+
 echo ""
 echo "PASS: $PASS FAIL: $FAIL"
 [ "$FAIL" -eq 0 ]

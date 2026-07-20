@@ -18,6 +18,16 @@ DRY_RUN=0
 
 log() { printf '%s\n' "$*"; }
 
+is_ignored() { # <repo> <rel>
+  grep -qxF "$2" "$1/.sync-ignore" 2>/dev/null
+}
+
+ignore_add() { # <repo> <rel>
+  echo "$2" >> "$1/.sync-ignore"
+  git -C "$1" add .sync-ignore
+  log "  ignored forever (recorded in $1/.sync-ignore)"
+}
+
 # classify <path> -> adopted | foreign | dangling | new
 classify() {
   local p=$1 target
@@ -47,6 +57,7 @@ handle_adopt_item() {
     adopted|foreign) ;;
     dangling) log "WARN: dangling symlink: $src" ;;
     new)
+      is_ignored "$repo" "$rel" && return 0
       log "NEW: $src -> $repo/$rel"
       ;;
   esac
