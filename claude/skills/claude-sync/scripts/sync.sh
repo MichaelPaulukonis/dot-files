@@ -171,7 +171,16 @@ sync_mcp_servers() {
   command -v jq >/dev/null 2>&1 || { log "WARN: jq not found, skipping mcpServers extract"; return 0; }
   local tmp
   tmp=$(mktemp)
-  jq '{mcpServers: (.mcpServers // {})}' "$CLAUDE_JSON" > "$tmp"
+  if ! jq '{mcpServers: (.mcpServers // {})}' "$CLAUDE_JSON" > "$tmp" 2>/dev/null; then
+    log "WARN: failed to parse $CLAUDE_JSON, skipping mcpServers extract"
+    rm -f "$tmp"
+    return 0
+  fi
+  if [[ ! -s $tmp ]]; then
+    log "WARN: $CLAUDE_JSON produced no/empty output, skipping mcpServers extract"
+    rm -f "$tmp"
+    return 0
+  fi
   copy_sync "$tmp" "$PRIVATE_REPO" "claude/mcp-servers.json" "$CLAUDE_JSON (mcpServers only)"
   rm -f "$tmp"
 }

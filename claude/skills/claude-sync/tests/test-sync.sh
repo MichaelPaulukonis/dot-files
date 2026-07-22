@@ -176,6 +176,17 @@ printf 's\n' | "$SYNC" >"$SANDBOX/out7.txt" 2>&1
 assert_grep "diff shown" "CHANGED: claude/settings.json" "$SANDBOX/out7.txt"
 assert_grep "copy updated" '"y"' "$SANDBOX/priv/claude/settings.json"
 
+# --- Task 4 fix: sync_mcp_servers must not clobber the tracked extract when
+# claude.json is empty (e.g. crash mid-write). jq's documented behavior on
+# empty input is "no output, exit 0" -- not a parse error -- so this can't
+# rely on `set -e`; it needs an explicit empty-output guard. RTK.md is still
+# the only remaining interactive item, hence the single 's' answer.
+cp "$SANDBOX/priv/claude/mcp-servers.json" "$SANDBOX/mcp-servers-before.json"
+: > "$SANDBOX/claude.json"
+printf 's\n' | "$SYNC" >"$SANDBOX/out8.txt" 2>&1
+assert_grep "empty claude.json warned" "produced no/empty output" "$SANDBOX/out8.txt"
+assert "mcp extract untouched on empty input" cmp -s "$SANDBOX/mcp-servers-before.json" "$SANDBOX/priv/claude/mcp-servers.json"
+
 echo ""
 echo "PASS: $PASS FAIL: $FAIL"
 [ "$FAIL" -eq 0 ]
