@@ -131,6 +131,15 @@ handle_adopt_item() {
   esac
 }
 
+scan_memory() {
+  local d proj
+  for d in "$CLAUDE_DIR"/projects/*/memory; do
+    [[ -d $d || -L $d ]] || continue
+    proj=$(basename "$(dirname "$d")")
+    handle_adopt_item "$d" "$PRIVATE_REPO" "claude/projects/$proj/memory"
+  done
+}
+
 # scan_adopt_dir <dir> <repo> <relbase>
 scan_adopt_dir() {
   local dir=$1 repo=$2 relbase=$3 item name
@@ -194,6 +203,7 @@ main() {
   scan_adopt_dir "$AGENTS_DIR/skills"        "$PUBLIC_REPO" "agents/skills"
   handle_adopt_item "$CLAUDE_DIR/CLAUDE.md"  "$PUBLIC_REPO" "claude/CLAUDE.md"
   handle_adopt_item "$CLAUDE_DIR/RTK.md"     "$PUBLIC_REPO" "claude/RTK.md"
+  scan_memory
 
   copy_sync "$CLAUDE_DIR/plugins/claude-hud/config.json" "$PUBLIC_REPO"  "claude/plugins/claude-hud/config.json"
   copy_sync "$CLAUDE_DIR/plugins/installed_plugins.json" "$PUBLIC_REPO"  "claude/plugins/installed_plugins.json"

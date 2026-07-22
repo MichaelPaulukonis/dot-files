@@ -33,7 +33,6 @@ make_repo() {
 build_fixture() {
   mkdir -p "$SANDBOX/dotclaude/skills/my-skill" \
            "$SANDBOX/dotclaude/plugins/cache/some-marketplace/vendor-skill" \
-           "$SANDBOX/dotclaude/projects/-Users-me-projA/memory" \
            "$SANDBOX/dotagents/skills" \
            "$SANDBOX/dotclaude/commands" "$SANDBOX/dotclaude/agents" \
            "$SANDBOX/dotclaude/scripts" "$SANDBOX/dotclaude/local-plugins"
@@ -43,7 +42,6 @@ build_fixture() {
   ln -s "$SANDBOX/nowhere-missing" "$SANDBOX/dotclaude/skills/dangler"
   echo "global instructions" > "$SANDBOX/dotclaude/CLAUDE.md"
   echo "rtk stuff" > "$SANDBOX/dotclaude/RTK.md"
-  echo "a memory" > "$SANDBOX/dotclaude/projects/-Users-me-projA/memory/fact.md"
   echo '{"model":"x"}' > "$SANDBOX/dotclaude/settings.json"
   echo '{"mcpServers":{"wiki":{"command":"npx"}},"other":"junk"}' > "$SANDBOX/claude.json"
   make_repo "$SANDBOX/pub"
@@ -52,6 +50,18 @@ build_fixture() {
   mkdir -p "$SANDBOX/pub/claude/skills/already-adopted"
   echo done > "$SANDBOX/pub/claude/skills/already-adopted/SKILL.md"
   ln -s "$SANDBOX/pub/claude/skills/already-adopted" "$SANDBOX/dotclaude/skills/already-adopted"
+}
+
+# Memory dir fixture is built separately from build_fixture() and only right
+# before the Task 5 block below. Creating it up front (inside build_fixture)
+# would make it prompt-visible during Tasks 1-4's interactive runs too, since
+# scan_memory() (wired into main() as of Task 5) treats it as a "new" item on
+# every $SYNC invocation -- silently shifting those tasks' already-committed
+# printf answer sequences. Task 5's own comment ("no memory dir has been
+# scanned yet") only holds if the dir doesn't exist before Task 5 runs.
+build_memory_fixture() {
+  mkdir -p "$SANDBOX/dotclaude/projects/-Users-me-projA/memory"
+  echo "a memory" > "$SANDBOX/dotclaude/projects/-Users-me-projA/memory/fact.md"
 }
 
 build_fixture
@@ -186,6 +196,14 @@ cp "$SANDBOX/priv/claude/mcp-servers.json" "$SANDBOX/mcp-servers-before.json"
 printf 's\n' | "$SYNC" >"$SANDBOX/out8.txt" 2>&1
 assert_grep "empty claude.json warned" "produced no/empty output" "$SANDBOX/out8.txt"
 assert "mcp extract untouched on empty input" cmp -s "$SANDBOX/mcp-servers-before.json" "$SANDBOX/priv/claude/mcp-servers.json"
+
+# --- Task 5: memory dirs ---
+# Remaining prompts: RTK.md (s), memory dir (a)
+build_memory_fixture
+printf 's\na\n' | "$SYNC" >"$SANDBOX/out9.txt" 2>&1
+assert "memory moved to private" test -f "$SANDBOX/priv/claude/projects/-Users-me-projA/memory/fact.md"
+assert "memory symlinked back"   test -L "$SANDBOX/dotclaude/projects/-Users-me-projA/memory"
+assert "memory writes flow through" bash -c "echo new > '$SANDBOX/dotclaude/projects/-Users-me-projA/memory/new.md' && test -f '$SANDBOX/priv/claude/projects/-Users-me-projA/memory/new.md'"
 
 echo ""
 echo "PASS: $PASS FAIL: $FAIL"
