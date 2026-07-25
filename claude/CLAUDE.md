@@ -28,11 +28,20 @@ When installing a homebrew package, update wiki page at `study/macos/homebrew` v
 
 ## MCP Server Installations
 
-When adding an MCP server, update wiki page at `study/mcp-servers` via wikijs MCP with:
+When adding an MCP server, update wiki page at `study/ai-ml/claude-code/mcp-servers` via wikijs MCP with:
 - Server name
 - Install date
 - Why installed (ask if not mentioned)
 - Link to repo/docs
+
+## Claude Code Skills & Plugin Installations
+
+When installing, creating, or updating a Claude Code skill or plugin, update wiki page at `study/ai-ml/claude-code/skills-plugins` via wikijs MCP (create entry if not yet there, append to update log if it is) with:
+- Name, type (skill/plugin), source
+- Scope (global vs project)
+- Install/update date and why (ask if not mentioned)
+- Link to repo/docs
+- Not a canonical taxonomy vs the MCP Servers page - if a plugin also provides an MCP server, pick one page for the full entry and cross-reference from the other rather than duplicating
 
 ## Wiki.js Journal Links
 
