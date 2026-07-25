@@ -1,0 +1,106 @@
+{
+  "version": 2,
+  "plugins": {
+    "nx@nx-claude-plugins": [
+      {
+        "scope": "project",
+        "projectPath": "/Users/michaelpaulukonis/projects/genart-monorepo",
+        "installPath": "/Users/michaelpaulukonis/.claude/plugins/cache/nx-claude-plugins/nx/0.2.16",
+        "version": "0.2.16",
+        "installedAt": "2026-02-28T16:05:31.537Z",
+        "lastUpdated": "2026-02-28T16:05:31.537Z",
+        "gitCommitSha": "db40088aadbeb2ec8af017528742530c35c13711"
+      }
+    ],
+    "claude-session-driver@superpowers-marketplace": [
+      {
+        "scope": "user",
+        "installPath": "/Users/michaelpaulukonis/.claude/plugins/cache/superpowers-marketplace/claude-session-driver/1.0.1",
+        "version": "1.0.1",
+        "installedAt": "2026-04-19T00:09:42.130Z",
+        "lastUpdated": "2026-04-19T00:09:42.130Z",
+        "gitCommitSha": "c60d2bda21ff0786e3044506b13d2d307676c1ef"
+      }
+    ],
+    "episodic-memory@superpowers-marketplace": [
+      {
+        "scope": "user",
+        "installPath": "/Users/michaelpaulukonis/.claude/plugins/cache/superpowers-marketplace/episodic-memory/1.0.15",
+        "version": "1.0.15",
+        "installedAt": "2026-04-19T00:09:42.545Z",
+        "lastUpdated": "2026-04-19T00:09:42.545Z",
+        "gitCommitSha": "c656adc64ef1576c58fd2f6ddb44c29c920b784b"
+      }
+    ],
+    "superpowers@superpowers-marketplace": [
+      {
+        "scope": "user",
+        "installPath": "/Users/michaelpaulukonis/.claude/plugins/cache/superpowers-marketplace/superpowers/5.0.7",
+        "version": "5.0.7",
+        "installedAt": "2026-04-19T00:09:42.934Z",
+        "lastUpdated": "2026-04-19T00:09:42.934Z",
+        "gitCommitSha": "b55764852ac78870e65c6565fb585b6cd8b3c5c9"
+      }
+    ],
+    "superpowers-developing-for-claude-code@superpowers-marketplace": [
+      {
+        "scope": "user",
+        "installPath": "/Users/michaelpaulukonis/.claude/plugins/cache/superpowers-marketplace/superpowers-developing-for-claude-code/0.3.1",
+        "version": "0.3.1",
+        "installedAt": "2026-04-19T00:09:43.321Z",
+        "lastUpdated": "2026-04-19T00:09:43.321Z",
+        "gitCommitSha": "74afe935da49efe782907e837a27ce618498099a"
+      }
+    ],
+    "superpowers-lab@superpowers-marketplace": [
+      {
+        "scope": "user",
+        "installPath": "/Users/michaelpaulukonis/.claude/plugins/cache/superpowers-marketplace/superpowers-lab/0.4.0",
+        "version": "0.4.0",
+        "installedAt": "2026-04-19T00:09:43.662Z",
+        "lastUpdated": "2026-04-19T00:09:43.662Z",
+        "gitCommitSha": "59389b1506e2d476980ee05c7c98c2f5e211fcb1"
+      }
+    ],
+    "caveman@caveman": [
+      {
+        "scope": "user",
+        "installPath": "/Users/michaelpaulukonis/.claude/plugins/cache/caveman/caveman/84cc3c14fa1e",
+        "version": "84cc3c14fa1e",
+        "installedAt": "2026-04-19T21:14:42.126Z",
+        "lastUpdated": "2026-04-19T21:14:42.126Z",
+        "gitCommitSha": "84cc3c14fa1e10182adaced856e003406ccd250d"
+      }
+    ],
+    "mempalace@mempalace": [
+      {
+        "scope": "user",
+        "installPath": "/Users/michaelpaulukonis/.claude/plugins/cache/mempalace/mempalace/3.3.3",
+        "version": "3.3.3",
+        "installedAt": "2026-04-29T23:55:35.539Z",
+        "lastUpdated": "2026-04-29T23:55:35.539Z",
+        "gitCommitSha": "fdfaf017abd54270fe44fe8faa5528c42e7d47f3"
+      }
+    ],
+    "claude-hud@claude-hud": [
+      {
+        "scope": "user",
+        "installPath": "/Users/michaelpaulukonis/.claude/plugins/cache/claude-hud/claude-hud/0.1.0",
+        "version": "0.1.0",
+        "installedAt": "2026-05-02T19:05:56.221Z",
+        "lastUpdated": "2026-05-02T19:05:56.221Z",
+        "gitCommitSha": "b53c3f0b208fd14df6407f9d830c565c0b43d520"
+      }
+    ],
+    "chrome-devtools-mcp@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "/Users/michaelpaulukonis/.claude/plugins/cache/claude-plugins-official/chrome-devtools-mcp/1.6.0",
+        "version": "1.6.0",
+        "installedAt": "2026-05-07T03:52:15.396Z",
+        "lastUpdated": "2026-07-17T00:40:10.032Z",
+        "gitCommitSha": "a1612be8e01401cf1711c64bc2ef5da5763ba956"
+      }
+    ]
+  }
+}
