@@ -202,14 +202,19 @@ finish_repo() { # <repo>
   git -C "$repo" status --short
   (( DRY_RUN )) && return 0
   if [[ -n $(git -C "$repo" status --porcelain) ]]; then
-    printf '%s' "commit all changes in $repo? [y/N]: "
+    printf '%s' "commit all changes in $repo? [y/N]: " >&2
     read -r ans || return 0
     if [[ $ans == y ]]; then
       git -C "$repo" add -A
-      git -C "$repo" commit -m "chore: claude-sync $(date +%Y-%m-%d)"
-      printf '%s' "push $repo? [y/N]: "
+      if ! git -C "$repo" commit -m "chore: claude-sync $(date +%Y-%m-%d)"; then
+        log "  !! commit failed in $repo - resolve manually"
+        return 0
+      fi
+      printf '%s' "push $repo? [y/N]: " >&2
       read -r ans || return 0
-      [[ $ans == y ]] && git -C "$repo" push
+      if [[ $ans == y ]]; then
+        git -C "$repo" push || log "  !! push failed in $repo - push manually"
+      fi
     fi
   fi
   return 0

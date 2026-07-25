@@ -218,6 +218,21 @@ assert_grep "commit offered" "commit all changes" "$SANDBOX/out10.txt"
 assert "idempotent run exits 0" test "$RC" -eq 0
 assert_absent "idempotent run finds no NEW" "^NEW" "$SANDBOX/out11.txt"
 
+# --- Task 6 fix: a commit failure in one repo must not abort finish_repo for
+# the other. Simulate a hook rejection (e.g. the not-yet-built gitleaks hook
+# from Task 9, whose entire purpose is to make some commits fail) via a
+# pre-commit hook that always exits 1, dropped into pub/.git/hooks -- same
+# fake-binary spirit as the adopt() rollback test above. pub and priv both
+# still have uncommitted changes staged from the "n\nn" decline above.
+mkdir -p "$SANDBOX/pub/.git/hooks"
+printf '#!/usr/bin/env bash\nexit 1\n' > "$SANDBOX/pub/.git/hooks/pre-commit"
+chmod +x "$SANDBOX/pub/.git/hooks/pre-commit"
+printf 'y\nn\n' | "$SYNC" >"$SANDBOX/out12.txt" 2>&1; RC=$?
+assert "script survives a commit failure" test "$RC" -eq 0
+assert_grep "commit failure logged" "commit failed in $SANDBOX/pub" "$SANDBOX/out12.txt"
+assert_grep "priv finish still ran after pub commit failure" "=== $SANDBOX/priv ===" "$SANDBOX/out12.txt"
+rm -f "$SANDBOX/pub/.git/hooks/pre-commit"
+
 echo ""
 echo "PASS: $PASS FAIL: $FAIL"
 [ "$FAIL" -eq 0 ]
