@@ -5,6 +5,7 @@ set -uo pipefail
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 SYNC="$SCRIPT_DIR/../scripts/sync.sh"
 SANDBOX=$(mktemp -d)
+SANDBOX=$(readlink -f -- "$SANDBOX")
 trap 'rm -rf "$SANDBOX"' EXIT
 PASS=0; FAIL=0
 
@@ -204,6 +205,18 @@ printf 's\na\n' | "$SYNC" >"$SANDBOX/out9.txt" 2>&1
 assert "memory moved to private" test -f "$SANDBOX/priv/claude/projects/-Users-me-projA/memory/fact.md"
 assert "memory symlinked back"   test -L "$SANDBOX/dotclaude/projects/-Users-me-projA/memory"
 assert "memory writes flow through" bash -c "echo new > '$SANDBOX/dotclaude/projects/-Users-me-projA/memory/new.md' && test -f '$SANDBOX/priv/claude/projects/-Users-me-projA/memory/new.md'"
+
+# --- Task 6: finish + idempotence ---
+# Adopt RTK.md (last new item), then answer n to both commit prompts
+printf 'a\nn\nn\n' | "$SYNC" >"$SANDBOX/out10.txt" 2>&1
+assert_grep "status header pub"  "=== $SANDBOX/pub ===" "$SANDBOX/out10.txt"
+assert_grep "status header priv" "=== $SANDBOX/priv ===" "$SANDBOX/out10.txt"
+assert_grep "commit offered" "commit all changes" "$SANDBOX/out10.txt"
+
+# everything adopted or ignored: a fresh run must make NO prompts (stdin closed)
+"$SYNC" </dev/null >"$SANDBOX/out11.txt" 2>&1; RC=$?
+assert "idempotent run exits 0" test "$RC" -eq 0
+assert_absent "idempotent run finds no NEW" "^NEW" "$SANDBOX/out11.txt"
 
 echo ""
 echo "PASS: $PASS FAIL: $FAIL"

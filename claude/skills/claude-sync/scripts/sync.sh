@@ -194,6 +194,27 @@ sync_mcp_servers() {
   rm -f "$tmp"
 }
 
+finish_repo() { # <repo>
+  local repo=$1 ans
+  [[ -d $repo/.git ]] || { log "WARN: not a git repo: $repo"; return 0; }
+  log ""
+  log "=== $repo ==="
+  git -C "$repo" status --short
+  (( DRY_RUN )) && return 0
+  if [[ -n $(git -C "$repo" status --porcelain) ]]; then
+    printf '%s' "commit all changes in $repo? [y/N]: "
+    read -r ans || return 0
+    if [[ $ans == y ]]; then
+      git -C "$repo" add -A
+      git -C "$repo" commit -m "chore: claude-sync $(date +%Y-%m-%d)"
+      printf '%s' "push $repo? [y/N]: "
+      read -r ans || return 0
+      [[ $ans == y ]] && git -C "$repo" push
+    fi
+  fi
+  return 0
+}
+
 main() {
   scan_adopt_dir "$CLAUDE_DIR/skills"        "$PUBLIC_REPO" "claude/skills"
   scan_adopt_dir "$CLAUDE_DIR/commands"      "$PUBLIC_REPO" "claude/commands"
@@ -210,5 +231,8 @@ main() {
   copy_sync "$CLAUDE_DIR/settings.json"                  "$PRIVATE_REPO" "claude/settings.json"
   copy_sync "$CLAUDE_DIR/settings.local.json"            "$PRIVATE_REPO" "claude/settings.local.json"
   sync_mcp_servers
+
+  finish_repo "$PUBLIC_REPO"
+  finish_repo "$PRIVATE_REPO"
 }
 main
