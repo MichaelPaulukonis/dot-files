@@ -28,6 +28,7 @@ get <path|id>          # content on stdout, metadata JSON on stderr
 search <query>         # id, path, title per line
 list [--limit N]       # most recently updated first
 delete <path|id> --yes # refuses without --yes
+move <path|id> <new-path>            # rename/move a page; changes its path
 upload <file> [--folder <slug|id>]   # prints embed path, e.g. /test-verify/img.png
 folders                # asset folders: id, slug, name
 assets [--folder <slug|id>]          # assets in folder: id, filename, size, updated
@@ -69,8 +70,10 @@ Max upload 5 MB (server default); script pre-checks and errors readably.
   Asset folders can only be created (`folders` lists them).
 - No asset move-between-folders or metadata edit either (verified by schema
   introspection: only createFolder, renameAsset, deleteAsset, flushTempUploads).
-  To "move": download the asset, `upload` to the target folder, `delete-asset`
+  To "move" an asset: download it, `upload` to the target folder, `delete-asset`
   the original, update any pages embedding the old path.
+- Pages, unlike assets, have a native move: `move` calls the `pages.move`
+  mutation directly - no download/reupload/delete dance needed.
 - Never upload assets with `.md`, `.html`, or `.txt` extensions - the router
   treats those as page paths, so the asset 404s even though the upload succeeds.
   Rename before upload (`.markdown` works); `rename-asset` refuses extension

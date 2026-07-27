@@ -5,3 +5,7 @@ agents/skills/specstory-organize
 agents/skills/specstory-project-stats
 agents/skills/specstory-session-summary
 agents/skills/specstory-yak
+claude/skills/gtasks-cli
+agents/skills/find-skills
+agents/skills/lore
+agents/skills/no-ai-slop

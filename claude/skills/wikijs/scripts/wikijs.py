@@ -180,6 +180,20 @@ def cmd_delete(args):
     print(f"deleted id={page_id}")
 
 
+def cmd_move(args):
+    page_id = resolve_page_id(args.ref)
+    data = gql(
+        """mutation($id: Int!, $destinationPath: String!, $destinationLocale: String!) {
+             pages { move(id: $id, destinationPath: $destinationPath,
+                          destinationLocale: $destinationLocale) {
+               responseResult { succeeded message } } } }""",
+        {"id": page_id, "destinationPath": args.destination.strip("/"),
+         "destinationLocale": LOCALE},
+    )
+    check_result(data["pages"]["move"]["responseResult"], "move")
+    print(f"moved id={page_id} -> /{args.destination.strip('/')}")
+
+
 def list_folders() -> list[dict]:
     data = gql(
         """query { assets { folders(parentFolderId: 0) { id name slug } } }"""
@@ -312,6 +326,11 @@ def main():
     p.add_argument("ref", help="page path or numeric id")
     p.add_argument("--yes", action="store_true")
     p.set_defaults(func=cmd_delete)
+
+    p = sub.add_parser("move", help="move/rename a page (changes its path)")
+    p.add_argument("ref", help="page path or numeric id")
+    p.add_argument("destination", help="new page path")
+    p.set_defaults(func=cmd_move)
 
     p = sub.add_parser("upload", help="upload an asset; prints its embed path")
     p.add_argument("file")
