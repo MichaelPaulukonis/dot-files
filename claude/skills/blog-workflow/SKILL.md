@@ -22,8 +22,10 @@ This stage is expected to run **multiple times** as an idea develops. Each run i
 1. Determine the slug and whether `writing/blog/drafts/[slug]` already exists (check `ideas` and the drafts folder).
 2. If new: create the draft page (parent = `writing/blog/drafts`), add a stub `blog-meta` block per `wiki-blog-conventions`, link it from `ideas` under `## Drafts`.
 3. If existing: fetch the current page. **Append** the new ramble text to the `## Original ramble (unedited)` section — don't overwrite earlier notes, it's a running log across iterations, each addition kept verbatim.
-4. Regenerate the polished body (everything between the `blog-meta` block and the `---` above the ramble heading) from the *full* accumulated ramble, applying `writing-style`. Replace the prior generated body outright.
-5. Show him the new body before writing it to Wiki.js. Only save after he confirms — same as the archive.org-extension post.
+4. **First draft only** (no generated body exists yet): propose a structure/outline from the ramble before writing prose. Show it, get confirmation, then proceed. Skip this on regenerations — a prior draft already implies structure; don't re-litigate it unless he asks to restructure.
+5. Regenerate the polished body (everything between the `blog-meta` block and the `---` above the ramble heading) from the *full* accumulated ramble, applying `writing-style`. Replace the prior generated body outright.
+6. Propose `title`/`headline` for the `blog-meta` stub against the current body — these aren't a byproduct of drafting the body, they need their own pass. Apply `writing-style`'s banned structures: no numbered-insight framing, no opposing-parenthetical titles, no fake-tension setups, nothing built to be clickable rather than accurate. State what the post is about, plainly.
+7. Show him the new body (and any title/headline change) before writing it to Wiki.js. Only save after he confirms — same as the archive.org-extension post.
 
 ## Stage 4: Polish
 
@@ -37,6 +39,10 @@ Only touch the body between the `blog-meta` block and the `---`/ramble heading �
 
 If he instead asks whether something reads as AI-written, that's `no-ai-slop`'s detect job, not edit — same rule applies, don't rewrite unasked.
 
+If he's stuck rather than asking for a slop pass — "this isn't working," "what's wrong with this" — that's a different job: diagnose, don't rewrite. Report where it loses focus, drifts from the point, or repeats itself. Wait for direction before editing anything.
+
+A polish request can also be a single targeted pass instead of a full no-ai-slop edit — e.g. "cut this to 800 words" or "tighten just the opening." Handle these as one-change passes: make the one change asked for, preserve voice, skip the rest.
+
 ## Stage 5: Move to published
 
 Trigger: he says the post is committed/pushed/live and to move the wiki page, or asks to clean up the wiki notes after a publish.
@@ -44,9 +50,10 @@ Trigger: he says the post is committed/pushed/live and to move the wiki page, or
 This is the `wiki-blog-conventions` idea-lifecycle step 3, in full:
 
 1. Resync the draft's `blog-meta` block and body against the real `content/blog/{slug}.md` first — hand edits after the `blog-publish` promotion (headline tweaks, dropped periods, retitles) happen in the site repo and don't flow back automatically. Don't skip this; a stale "record" is worse than none.
-2. **Don't move the page yourself with create+delete.** The `wikijs` MCP server has no move/rename tool, and recreating the page at the new path then deleting the old one destroys its revision history (already happened to `dragline` and `ia-book-page-downloader`). Ask him to move `writing/blog/drafts/[slug]` → `writing/blog/published/[slug]` through the Wiki.js UI itself (page action menu → Move/Rename, preserves history), or use a `wikijs_move_page` tool if one exists by the time you read this. If neither is available, stop and ask rather than falling back to create+delete.
-3. Once the page is at its new path, remove the slug's bullet from `ideas` entirely (both `## Drafts` and `## Ideas`).
-4. While in there, check the `writing/blog/drafts` index page for staleness (missing entries, entries for pages that no longer exist) — it's hand-maintained and drifts.
+2. Check `socialImage.src` isn't still `/media/default-social.jpg` (the placeholder per `wiki-blog-conventions`). If it is, flag it to him before moving on — don't move/publish silently on the default image.
+3. **Don't move the page yourself with create+delete.** The `wikijs` MCP server has no move/rename tool, and recreating the page at the new path then deleting the old one destroys its revision history (already happened to `dragline` and `ia-book-page-downloader`). Ask him to move `writing/blog/drafts/[slug]` → `writing/blog/published/[slug]` through the Wiki.js UI itself (page action menu → Move/Rename, preserves history), or use a `wikijs_move_page` tool if one exists by the time you read this. If neither is available, stop and ask rather than falling back to create+delete.
+4. Once the page is at its new path, remove the slug's bullet from `ideas` entirely (both `## Drafts` and `## Ideas`).
+5. While in there, check the `writing/blog/drafts` index page for staleness (missing entries, entries for pages that no longer exist) — it's hand-maintained and drifts.
 
 ## Notes
 
