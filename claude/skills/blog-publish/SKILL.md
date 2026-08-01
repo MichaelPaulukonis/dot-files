@@ -7,7 +7,7 @@ description: Use when publishing a completed wiki draft to the blog. Triggers on
 
 ## Overview
 
-Pulls a completed draft from Wiki.js via MCP, extracts metadata, and writes a ready-to-commit `.md` file to `content/blog/`.
+Pulls a completed draft from Wiki.js via the `wikijs` CLI skill, extracts metadata, and writes a ready-to-commit `.md` file to `content/blog/`.
 
 **REQUIRED:** Load `wiki-blog-conventions` first - it defines the expected wiki page format.
 
@@ -21,10 +21,10 @@ for every read/write/git step below, don't assume a relative `content/blog/...` 
 ### 1. Fetch the wiki page
 
 ```
-mcp__wikijs__wikijs_get_page  path: writing/blog/drafts/{slug}
+python3 ~/.claude/skills/wikijs/scripts/wikijs.py get writing/blog/drafts/{slug}
 ```
 
-If path unknown: `mcp__wikijs__wikijs_search_pages` to find it.
+If path unknown: `python3 ~/.claude/skills/wikijs/scripts/wikijs.py search {query}` to find it. (Remember to source `~/.config/wikijs.env` first — see the `wikijs` skill.)
 
 ### 2. Extract blog-meta block
 
