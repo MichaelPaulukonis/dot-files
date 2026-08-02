@@ -115,23 +115,29 @@ trimmed text. Keep one copy.
 **5. Nothing found -> skip.** If zero items survive steps 3-4, do not create a
 `## Carried over` section at all. Leave the entry as-is from Step 4.
 
-**6. Write to today's entry.** If items were found:
+**6. Write to today's entry.** If items were found, use ANSI-C quoting (`$'...'`)
+so `\n` is a real newline, not a literal backslash-n - plain `"..."` double quotes
+do NOT expand `\n` in bash:
 - If today's page still has the Step 4 placeholder `<!-- -->`, replace it (same
   rule as "Adding content later" below):
-  `wj update <today-path> --replace "## Carried over\n\n<item 1>\n<item 2>..."`
-- Otherwise append: `wj update <today-path> --append "## Carried over\n\n<item 1>\n<item 2>..."`
+  `wj update <today-path> --replace $'## Carried over\n\n<item 1>\n<item 2>...'`
+- Otherwise append: `wj update <today-path> --append $'## Carried over\n\n<item 1>\n<item 2>...'`
 - `<item N>` here is the full original line, checkbox marker included - always
   unchecked `- [ ] ` since a checked item was never a candidate (Step 3). For
   example, carrying over `test dup item`, `test unique item one`, and
   `test unique item two` writes:
-  `wj update <today-path> --replace "## Carried over\n\n- [ ] test dup item\n- [ ] test unique item one\n- [ ] test unique item two"`
+  `wj update <today-path> --replace $'## Carried over\n\n- [ ] test dup item\n- [ ] test unique item one\n- [ ] test unique item two'`
 
 **7. Migrate, don't copy.** For every source page a carried item came from: `wj get`
-its current content, remove that exact line, `wj update <source-path> --replace
-"<content with the line removed>"`. The item now exists exactly once, on today's
-page. If this were to strip a source page down to empty (shouldn't happen -
-checkbox lines live inside real entry content), fall back to the `<!-- -->`
-placeholder rule rather than sending an empty update.
+its current content and remove that exact line(s). **Before writing**, check whether
+what's left is empty or whitespace-only - this is an expected outcome, not a rare
+edge case: any day whose entire entry was just a couple of quick TODOs will strip
+down to nothing once they're carried over. If so, use the `<!-- -->` placeholder
+(same rule as Step 4) as the replacement content from the start:
+`wj update <source-path> --replace "<!-- -->"`. Otherwise: `wj update <source-path>
+--replace "<content with the line removed>"`. Don't send the empty string and let
+`wj update --replace` reject it after the fact (`error: update failed: Page content
+cannot be empty.`) - check first. The item now exists exactly once, on today's page.
 
 **Known tradeoff:** items older than 7 calendar days simply expire unflagged -
 accepted per the 2026-08-02 decision to keep this lightweight rather than
