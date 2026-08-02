@@ -103,7 +103,9 @@ is expected, not a failure.
 
 **3. Extract unchecked items only.** From each page that *does* exist, scan its raw
 content for lines matching exactly `- [ ] ` (literal space between the brackets).
-Leave everything else alone:
+Each matching line, checkbox marker included, is the "item" - everywhere below that
+says "item" means the full line (`- [ ] ` prefix plus its text), never just the
+description text after the marker. Leave everything else alone:
 - `- [x]` / `- [X]` (done) - not carried, not touched
 - prose-style todos without checkbox syntax - out of scope, not carried
 
@@ -118,6 +120,11 @@ trimmed text. Keep one copy.
   rule as "Adding content later" below):
   `wj update <today-path> --replace "## Carried over\n\n<item 1>\n<item 2>..."`
 - Otherwise append: `wj update <today-path> --append "## Carried over\n\n<item 1>\n<item 2>..."`
+- `<item N>` here is the full original line, checkbox marker included - always
+  unchecked `- [ ] ` since a checked item was never a candidate (Step 3). For
+  example, carrying over `test dup item`, `test unique item one`, and
+  `test unique item two` writes:
+  `wj update <today-path> --replace "## Carried over\n\n- [ ] test dup item\n- [ ] test unique item one\n- [ ] test unique item two"`
 
 **7. Migrate, don't copy.** For every source page a carried item came from: `wj get`
 its current content, remove that exact line, `wj update <source-path> --replace
