@@ -101,6 +101,16 @@
         "lastUpdated": "2026-07-17T00:40:10.032Z",
         "gitCommitSha": "a1612be8e01401cf1711c64bc2ef5da5763ba956"
       }
+    ],
+    "claude-wikijs-skill@claude-wikijs-skill": [
+      {
+        "scope": "user",
+        "installPath": "/Users/michaelpaulukonis/.claude/plugins/cache/claude-wikijs-skill/claude-wikijs-skill/0.1.1",
+        "version": "0.1.1",
+        "installedAt": "2026-08-01T02:44:17.797Z",
+        "lastUpdated": "2026-08-02T00:01:38.250Z",
+        "gitCommitSha": "7b06a0577af2cc60c3f9752a831bfbb5a695a5c1"
+      }
     ]
   }
 }

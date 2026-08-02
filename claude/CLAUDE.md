@@ -48,4 +48,13 @@ When installing, creating, or updating a Claude Code skill or plugin, update wik
 When linking to a journal/Wiki.js page in a response, prefix with `http://localhost/` (e.g. `http://localhost/journal/...`) - not `https`, not a bare path.
 - Why: bare paths aren't clickable; no local TLS cert, so `https` fails.
 
+## Wiki.js Journal Convention
+
+This convention matches the live wiki - do not deviate:
+- Entry path: `journal/{year}/{month}/{day}-{weekday}` - month/day zero-padded, weekday lowercase full name. Example: `journal/2026/07/18-saturday`
+- Entry title: `{day} {Weekday}` - e.g. `18 Saturday`
+- Entry body starts empty; append plain lines under the title, promote anything longer than a couple of lines to its own `## Section`
+- Parent pages: `journal` has `## Years`, `journal/{year}` has `## Months`, `journal/{year}/{month}` has `## Entries` with day links sorted by day
+- Journaling flow: `get` today's page; if missing, `create` it (and any missing parents top-down, adding the link to each parent's list section); then `update --append`
+
 @RTK.md
