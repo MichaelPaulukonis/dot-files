@@ -1,7 +1,7 @@
 ---
 name: journal-entry
 description: Use when user wants to create a dated journal entry page in Wiki.js.
-version: 2.0.0
+version: 2.1.0
 ---
 
 # Journal Entry Scaffolder
@@ -83,6 +83,52 @@ wj create journal/{year}/{month}/{day}-{weekday} "{day} {Weekday}" --content "<!
 
 When adding the first real content, use `--replace` to drop the placeholder;
 subsequent additions use `--append`.
+
+### Step 4.5: Carry over open TODOs (past 7 calendar days)
+
+Only runs when Step 4 just created a brand-new entry (never on an existing page -
+Step 2 already stops early in that case, so this never re-triggers on a re-run).
+
+**1. List candidate source paths** - past 7 calendar days, not "last 7 entries":
+
+```bash
+for i in 1 2 3 4 5 6 7; do
+  echo "journal/$(date -v-${i}d '+%Y/%m/%d-%A' | tr '[:upper:]' '[:lower:]')"
+done
+```
+
+**2. Fetch each candidate.** `wj get <path>` for each of the 7 paths above. If it
+errors (page doesn't exist - skipped day, weekend, etc.), skip it silently. This
+is expected, not a failure.
+
+**3. Extract unchecked items only.** From each page that *does* exist, scan its raw
+content for lines matching exactly `- [ ] ` (literal space between the brackets).
+Leave everything else alone:
+- `- [x]` / `- [X]` (done) - not carried, not touched
+- prose-style todos without checkbox syntax - out of scope, not carried
+
+**4. Dedupe.** Across all collected lines from all source pages, dedupe by exact
+trimmed text. Keep one copy.
+
+**5. Nothing found -> skip.** If zero items survive steps 3-4, do not create a
+`## Carried over` section at all. Leave the entry as-is from Step 4.
+
+**6. Write to today's entry.** If items were found:
+- If today's page still has the Step 4 placeholder `<!-- -->`, replace it (same
+  rule as "Adding content later" below):
+  `wj update <today-path> --replace "## Carried over\n\n<item 1>\n<item 2>..."`
+- Otherwise append: `wj update <today-path> --append "## Carried over\n\n<item 1>\n<item 2>..."`
+
+**7. Migrate, don't copy.** For every source page a carried item came from: `wj get`
+its current content, remove that exact line, `wj update <source-path> --replace
+"<content with the line removed>"`. The item now exists exactly once, on today's
+page. If this were to strip a source page down to empty (shouldn't happen -
+checkbox lines live inside real entry content), fall back to the `<!-- -->`
+placeholder rule rather than sending an empty update.
+
+**Known tradeoff:** items older than 7 calendar days simply expire unflagged -
+accepted per the 2026-08-02 decision to keep this lightweight rather than
+bullet-proof.
 
 ### Step 5: Add entry link to month page
 
