@@ -9,12 +9,13 @@ version: 2.1.0
 Create a new journal page in Wiki.js with the correct naming conventions, ensuring
 all parent hierarchy pages exist.
 
-Uses the `wikijs` skill's CLI (`~/.claude/skills/wikijs/scripts/wikijs.py`) - NOT
-the wikijs MCP server. Every command needs env sourced first:
+Uses the `claude-wikijs-skill` plugin's CLI
+(`~/.claude/plugins/marketplaces/claude-wikijs-skill/skills/wikijs/scripts/wikijs.py`)
+- NOT the wikijs MCP server. Every command needs env sourced first:
 
 ```bash
 set -a; source ~/.config/wikijs.env; set +a
-wj() { python3 ~/.claude/skills/wikijs/scripts/wikijs.py "$@"; }
+wj() { python3 ~/.claude/plugins/marketplaces/claude-wikijs-skill/skills/wikijs/scripts/wikijs.py "$@"; }
 ```
 
 ## Conventions (verified against live wiki 2026-07-18)

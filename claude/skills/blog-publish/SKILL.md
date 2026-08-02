@@ -21,10 +21,10 @@ for every read/write/git step below, don't assume a relative `content/blog/...` 
 ### 1. Fetch the wiki page
 
 ```
-python3 ~/.claude/skills/wikijs/scripts/wikijs.py get writing/blog/drafts/{slug}
+python3 ~/.claude/plugins/marketplaces/claude-wikijs-skill/skills/wikijs/scripts/wikijs.py get writing/blog/drafts/{slug}
 ```
 
-If path unknown: `python3 ~/.claude/skills/wikijs/scripts/wikijs.py search {query}` to find it. (Remember to source `~/.config/wikijs.env` first — see the `wikijs` skill.)
+If path unknown: `python3 ~/.claude/plugins/marketplaces/claude-wikijs-skill/skills/wikijs/scripts/wikijs.py search {query}` to find it. (Remember to source `~/.config/wikijs.env` first — see the `claude-wikijs-skill` plugin.)
 
 ### 2. Extract blog-meta block
 
