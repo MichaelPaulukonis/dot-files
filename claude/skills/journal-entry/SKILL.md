@@ -131,7 +131,8 @@ do NOT expand `\n` in bash:
 
 **7. Migrate, don't copy - mark it, don't delete it.** For every source page a carried
 item came from: `wj get` its current content. Replace each carried line *in place*
-with a marked trace, rather than removing it:
+with a marked trace, rather than removing it - if the exact line text appears more
+than once on that source page, replace every occurrence, not just the first:
 
 `- [x] ~~<description>~~ → migrated to [{day} {Weekday}](/journal/{year}/{month}/{day}-{weekday})`
 
@@ -145,7 +146,7 @@ record of where the item went instead of silently losing content.
 Write it back with the same ANSI-C quoting as Step 6 (plain `"..."` won't expand
 `\n`):
 
-`wj update <source-path> --replace $'<content with each carried line replaced in place>'`
+`wj update <source-path> --replace $'<full content with each carried line replaced in place>'`
 
 Because a line is always *replaced* by another line - never deleted outright - the
 source page can never end up empty or reduced to a dangling heading. There is no
