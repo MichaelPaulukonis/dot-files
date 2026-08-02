@@ -129,8 +129,10 @@ do NOT expand `\n` in bash:
   `wj update <today-path> --replace $'## Carried over\n\n- [ ] test dup item\n- [ ] test unique item one\n- [ ] test unique item two'`
 
 **7. Migrate, don't copy.** For every source page a carried item came from: `wj get`
-its current content and remove that exact line(s). **Before writing**, check whether
-what's left is empty or whitespace-only - this is an expected outcome, not a rare
+its current content and remove that exact line(s); if that leaves the source page's
+own `## Carried over` heading with nothing under it (e.g. that day's entry was itself
+created by a prior carryover), strip that now-empty heading too. **Before writing**,
+check whether what's left is empty or whitespace-only - this is an expected outcome, not a rare
 edge case: any day whose entire entry was just a couple of quick TODOs will strip
 down to nothing once they're carried over. If so, use the `<!-- -->` placeholder
 (same rule as Step 4) as the replacement content from the start:
