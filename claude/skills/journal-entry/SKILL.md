@@ -1,7 +1,7 @@
 ---
 name: journal-entry
 description: Use when user wants to create a dated journal entry page in Wiki.js.
-version: 2.1.0
+version: 2.2.0
 ---
 
 # Journal Entry Scaffolder
@@ -129,18 +129,27 @@ do NOT expand `\n` in bash:
   `test unique item two` writes:
   `wj update <today-path> --replace $'## Carried over\n\n- [ ] test dup item\n- [ ] test unique item one\n- [ ] test unique item two'`
 
-**7. Migrate, don't copy.** For every source page a carried item came from: `wj get`
-its current content and remove that exact line(s); if that leaves the source page's
-own `## Carried over` heading with nothing under it (e.g. that day's entry was itself
-created by a prior carryover), strip that now-empty heading too. **Before writing**,
-check whether what's left is empty or whitespace-only - this is an expected outcome, not a rare
-edge case: any day whose entire entry was just a couple of quick TODOs will strip
-down to nothing once they're carried over. If so, use the `<!-- -->` placeholder
-(same rule as Step 4) as the replacement content from the start:
-`wj update <source-path> --replace "<!-- -->"`. Otherwise: `wj update <source-path>
---replace "<content with the line removed>"`. Don't send the empty string and let
-`wj update --replace` reject it after the fact (`error: update failed: Page content
-cannot be empty.`) - check first. The item now exists exactly once, on today's page.
+**7. Migrate, don't copy - mark it, don't delete it.** For every source page a carried
+item came from: `wj get` its current content. Replace each carried line *in place*
+with a marked trace, rather than removing it:
+
+`- [x] ~~<description>~~ → migrated to [{day} {Weekday}](/journal/{year}/{month}/{day}-{weekday})`
+
+Here `<description>` is the item's original text with its `- [ ] ` prefix stripped
+(e.g. `- [ ] buy milk` becomes `- [x] ~~buy milk~~ → migrated to [...]`), and the
+link points at today's entry - the page Step 4 just created. The replacement line is
+checked (`[x]`), so Step 3's `- [ ] ` filter will never match it again on a future
+run: it's inert, won't be re-carried, and the source page keeps a permanent, visible
+record of where the item went instead of silently losing content.
+
+Write it back with the same ANSI-C quoting as Step 6 (plain `"..."` won't expand
+`\n`):
+
+`wj update <source-path> --replace $'<content with each carried line replaced in place>'`
+
+Because a line is always *replaced* by another line - never deleted outright - the
+source page can never end up empty or reduced to a dangling heading. There is no
+emptiness check needed here (unlike the delete-based approach this replaces).
 
 **Known tradeoff:** items older than 7 calendar days simply expire unflagged -
 accepted per the 2026-08-02 decision to keep this lightweight rather than
