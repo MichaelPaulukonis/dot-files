@@ -9,3 +9,4 @@ claude/skills/gtasks-cli
 agents/skills/find-skills
 agents/skills/lore
 agents/skills/no-ai-slop
+claude/skills/google-workspace

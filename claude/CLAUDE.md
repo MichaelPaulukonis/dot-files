@@ -57,4 +57,12 @@ This convention matches the live wiki - do not deviate:
 - Parent pages: `journal` has `## Years`, `journal/{year}` has `## Months`, `journal/{year}/{month}` has `## Entries` with day links sorted by day
 - Journaling flow: `get` today's page; if missing, `create` it (and any missing parents top-down, adding the link to each parent's list section); then `update --append`
 
+## Daily Personal Check-in
+
+A `SessionStart` hook (`~/.claude/scripts/daily-checkin-hook.sh`) gates a personal-context question to once per calendar day, rotating through: family, career, personality/likes, background. State: `~/.claude/daily-checkin/state.json`.
+
+- **Automatic**: when the hook fires (not silent), work one low-friction question from the given category into the session naturally - check nornicdb + mempalace (wing `personal`, room = category) for what's already known, find a real gap, ask about it. Easy to skip/defer - don't force it.
+- **On-demand**: if I explicitly ask you to ask me a check-in question (any category, or unspecified), do the same gap-fill lookup and ask - regardless of whether today's automatic one already fired. This doesn't touch the daily-gate state file or the category rotation.
+- Store answers to nornicdb AND mempalace (not Claude's own memory files) under wing `personal`, room = category.
+
 @RTK.md
