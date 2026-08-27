@@ -59,10 +59,13 @@ This convention matches the live wiki - do not deviate:
 
 ## Daily Personal Check-in
 
-A `SessionStart` hook (`~/.claude/scripts/daily-checkin-hook.sh`) gates a personal-context question to once per calendar day, rotating through: family, career, personality/likes, background. State: `~/.claude/daily-checkin/state.json`.
+A `SessionStart` + `UserPromptSubmit` hook (`~/.claude/scripts/daily-checkin-hook.sh`) surfaces a personal-context question, gated to once per calendar day, rotating through: family, career, personality/likes, background. State: `~/.claude/daily-checkin/state.json`.
 
-- **Automatic**: when the hook fires (not silent), work one low-friction question from the given category into the session naturally - check nornicdb + mempalace (wing `personal`, room = category) for what's already known, find a real gap, ask about it. Easy to skip/defer - don't force it.
-- **On-demand**: if I explicitly ask you to ask me a check-in question (any category, or unspecified), do the same gap-fill lookup and ask - regardless of whether today's automatic one already fired. This doesn't touch the daily-gate state file or the category rotation.
-- Store answers to nornicdb AND mempalace (not Claude's own memory files) under wing `personal`, room = category.
+- **Reminder repeats every turn until resolved** - firing the reminder does NOT mark the day done; only running `~/.claude/scripts/daily-checkin-hook.sh --mark` does. This is deliberate: it used to mark the day "asked" the moment the hook fired, so one ignored reminder silently burned the whole day with no retry. Now it keeps resurfacing (SessionStart and every UserPromptSubmit) until actually resolved.
+- **Automatic**: when the reminder appears (PENDING for today's category), work one low-friction question into the session naturally - check nornicdb + mempalace (wing `personal`, room = category) for what's already known, find a real gap, ask about it.
+  - If they answer: store it to nornicdb AND mempalace (not Claude's own memory files) under wing `personal`, room = category, then run `~/.claude/scripts/daily-checkin-hook.sh --mark`.
+  - If they decline ("not tonight", skip, etc.): respect it immediately, don't ask again this session, then still run `--mark` - this silences it for the rest of today only; it returns with the next category on a future day.
+  - Do not run `--mark` until one of those two things has actually happened - a session that never asks should keep getting reminded, including in later sessions the same day.
+- **On-demand**: if I explicitly ask you to ask me a check-in question (any category, or unspecified), do the same gap-fill lookup and ask - regardless of whether today's automatic one is pending or already resolved. This doesn't touch the daily-gate state file or the category rotation (don't run `--mark` for this path).
 
 @RTK.md
