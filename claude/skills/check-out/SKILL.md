@@ -24,7 +24,7 @@ Ask: "What did you work on? Paste any notes, accomplishments, or items to log." 
 
 ## Step 4: Update today's journal
 
-Add the notes to today's journal, using the `journal-entry` skill's append convention (never a full-page replace — that would wipe any other content already on the page):
+Add the notes to today's journal, using the `journal-entry` skill's append convention (never a full-page replace - that would wipe any other content already on the page):
 
 - Named topics (project work, decisions, meetings-equivalent) get their own `##` heading.
 - Miscellaneous items go as bullets directly under the `#` heading.
