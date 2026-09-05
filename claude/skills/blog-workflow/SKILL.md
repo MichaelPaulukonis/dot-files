@@ -23,9 +23,11 @@ This stage is expected to run **multiple times** as an idea develops. Each run i
 2. If new: create the draft page (parent = `writing/blog/drafts`), add a stub `blog-meta` block per `wiki-blog-conventions`, link it from `ideas` under `## Drafts`.
 3. If existing: fetch the current page. **Append** the new ramble text to the `## Original ramble (unedited)` section — don't overwrite earlier notes, it's a running log across iterations, each addition kept verbatim.
 4. **First draft only** (no generated body exists yet): propose a structure/outline from the ramble before writing prose. Show it, get confirmation, then proceed. Skip this on regenerations — a prior draft already implies structure; don't re-litigate it unless he asks to restructure.
-5. Regenerate the polished body (everything between the `blog-meta` block and the `---` above the ramble heading) from the *full* accumulated ramble, applying `writing-style`. Replace the prior generated body outright.
-6. Propose `title`/`headline` for the `blog-meta` stub against the current body — these aren't a byproduct of drafting the body, they need their own pass. Apply `writing-style`'s banned structures: no numbered-insight framing, no opposing-parenthetical titles, no fake-tension setups, nothing built to be clickable rather than accurate. State what the post is about, plainly.
-7. Show him the new body (and any title/headline change) before writing it to Wiki.js. Only save after he confirms — same as the archive.org-extension post.
+5. Load 1-2 examples from `examples/` for voice/structure calibration before writing prose — see the note at the top of `examples/` for which fits the topic.
+6. Regenerate the polished body (everything between the `blog-meta` block and the `---` above the ramble heading) from the *full* accumulated ramble, applying `writing-style`. Replace the prior generated body outright.
+7. Propose `title`/`headline` for the `blog-meta` stub against the current body — these aren't a byproduct of drafting the body, they need their own pass. Apply `writing-style`'s banned structures: no numbered-insight framing, no opposing-parenthetical titles, no fake-tension setups, nothing built to be clickable rather than accurate. State what the post is about, plainly.
+8. Run the eval loop (below) against the new body and title/headline before showing them.
+9. Show him the new body (and any title/headline change) before writing it to Wiki.js. Only save after he confirms — same as the archive.org-extension post.
 
 ## Stage 4: Polish
 
@@ -35,7 +37,8 @@ Only touch the body between the `blog-meta` block and the `---`/ramble heading �
 
 1. Fetch the current draft body from Wiki.js (or take pasted text if he gives it directly).
 2. Invoke the `no-ai-slop` skill's edit workflow on that body.
-3. Show him the edited body plus its "What changed" section. Write back to Wiki.js only after he confirms.
+3. Run the eval loop (below) against the edited body.
+4. Show him the edited body plus its "What changed" section. Write back to Wiki.js only after he confirms.
 
 If he instead asks whether something reads as AI-written, that's `no-ai-slop`'s detect job, not edit — same rule applies, don't rewrite unasked.
 
@@ -52,8 +55,39 @@ This is the `wiki-blog-conventions` idea-lifecycle step 3, in full:
 1. Resync the draft's `blog-meta` block and body against the real `content/blog/{slug}.md` first — hand edits after the `blog-publish` promotion (headline tweaks, dropped periods, retitles) happen in the site repo and don't flow back automatically. Don't skip this; a stale "record" is worse than none.
 2. Check `socialImage.src` isn't still `/media/default-social.jpg` (the placeholder per `wiki-blog-conventions`). If it is, flag it to him before moving on — don't move/publish silently on the default image.
 3. **Don't move the page yourself with create+delete.** Recreating the page at the new path then deleting the old one destroys its revision history (already happened to `dragline` and `ia-book-page-downloader`). Move `writing/blog/drafts/[slug]` → `writing/blog/published/[slug]` with the `wikijs` CLI skill's `move` command (`wikijs.py move {ref} {destination}`, preserves history). The `wikijs` MCP server has been removed — the CLI script is the only interface now.
-4. Once the page is at its new path, remove the slug's bullet from `ideas` entirely (both `## Drafts` and `## Ideas`).
-5. While in there, check the `writing/blog/drafts` index page for staleness (missing entries, entries for pages that no longer exist) — it's hand-maintained and drifts.
+4. Once moved, prepend a publication marker above the `blog-meta` block: `> **Published:** [Title](https://michaelpaulukonis.github.io/blog/{slug}) — YYYY-MM-DD`. Never on the placeholder — confirm the post is actually live first (step 1 already required this).
+5. Add a one-line note to today's Wiki.js journal entry (per the `journal-entry` skill's "Adding content later" append convention): `Published: [Title](https://michaelpaulukonis.github.io/blog/{slug})`. This is his date-driven log of what he was doing — always add it, don't ask.
+6. Once the page is at its new path, remove the slug's bullet from `ideas` entirely (both `## Drafts` and `## Ideas`).
+7. While in there, check the `writing/blog/drafts` index page for staleness (missing entries, entries for pages that no longer exist) — it's hand-maintained and drifts.
+
+## Eval loop
+
+Run after Stage 2 body/title regeneration and after Stage 4 polish edits, before showing him anything.
+
+**Preferred: spawn a separate eval sub-agent** with this prompt:
+
+```
+You are an evaluator. Read the output below and check it against each numbered
+item in ~/.claude/skills/blog-workflow/eval.md
+
+For each check, answer PASS or FAIL. If FAIL, quote the specific problem and
+state the fix in one sentence.
+
+Output:
+{draft}
+```
+
+**If sub-agent spawning is not available:** read `eval.md` yourself and run the checks inline.
+
+**Loop behavior:**
+
+1. Run eval against current output.
+2. On any FAIL: fix (minimum effective edit — do not rewrite from scratch).
+3. Re-run eval.
+4. Repeat until all pass, or 3 iterations.
+5. After 3 iterations: show the best version with a note listing unresolved checks.
+
+After each session touching this skill, log any skill-improvement observation (not output-quality — that's eval.md's job) to `memory.md`.
 
 ## Notes
 

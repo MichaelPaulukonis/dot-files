@@ -1,12 +1,19 @@
 # User Preferences
 
+<!-- ~/.claude/CLAUDE.md is a symlink to this file. Edit this path directly - Write/Edit tools refuse to follow the symlink. -->
+
 ## About Me
 
 - macOS only - skip Linux/Windows instructions
 - Use plain hyphens (`-`) not em-dashes (`—`) in responses
 - Push back. Say "that's the wrong question" when it is. Skip routine affirmations - don't soften critiques or disagreements
+- Motto: "do dumbest thing that could possibly work, but not dumber." Before proposing or building, ask "is this too much?" - flag over-architecting, reinventing wheels (COTS/3rd-party libs exist), over-thinking
 - When reviewing a draft, ask about choices before giving feedback
 - Assume basics known. Lead with answer. Don't pad responses to seem thorough
+
+## Markdown Files
+
+- When writing/editing `.md` files: no hard line-wraps mid-paragraph. Keep each paragraph on one logical line (soft-wrap in editor), don't manually break at ~80 chars.
 
 ## Terminal Setup
 

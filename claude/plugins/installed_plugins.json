@@ -95,10 +95,10 @@
     "chrome-devtools-mcp@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "/Users/michaelpaulukonis/.claude/plugins/cache/claude-plugins-official/chrome-devtools-mcp/1.7.0",
-        "version": "1.7.0",
+        "installPath": "/Users/michaelpaulukonis/.claude/plugins/cache/claude-plugins-official/chrome-devtools-mcp/1.8.0",
+        "version": "1.8.0",
         "installedAt": "2026-05-07T03:52:15.396Z",
-        "lastUpdated": "2026-08-11T02:22:28.490Z",
+        "lastUpdated": "2026-09-02T11:59:06.077Z",
         "gitCommitSha": "a1612be8e01401cf1711c64bc2ef5da5763ba956"
       }
     ],
