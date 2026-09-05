@@ -35,7 +35,7 @@ Do not ask for confirmation before writing this part - just transcribe what he g
 
 Review today's notes for: shipped features/projects, recognition or praise from others, demos or things shared publicly, key decisions made or unblocked, notable outcomes.
 
-If found, ask: "Should _[specific item]_ go into your highlights?"
+If found, ask once per candidate item: "Should _[specific item]_ go into your highlights?"
 
 If yes → update wiki page `writing/wins`:
 
@@ -50,20 +50,21 @@ If no highlights were found, skip the question entirely - don't ask and have him
 
 ## Step 6: Reflection
 
-Ask these four questions together:
+**Fold-in check (before asking):** check `~/.claude/daily-checkin/state.json` for today's date. If today's daily personal check-in rotation is NOT yet resolved, plan to ask its question as a fifth prompt in the same batch below (using today's rotation category) - not as a separate interruption. If the rotation is already resolved (by `check-in`'s catch-up step, or earlier this session), skip this - don't ask twice.
+
+Ask these questions together (four, or five if the fold-in check above added one):
 
 1. "Describe your day in a few words."
 2. "Any blockers to note?"
 3. "What was your most important accomplishment today?"
 4. "What's the most important thing you need to do tomorrow?"
+5. (If folded in) the daily personal check-in rotation's question for today's category.
 
-**Fold-in check:** before logging, check `~/.claude/daily-checkin/state.json` for today's date. If today's daily personal check-in rotation is NOT yet resolved, add its question as a fifth prompt in this same batch (using today's rotation category, not a separate interruption). After he answers, store that answer to nornicdb and mempalace under wing "personal", room = today's category, then run:
+After he answers, if the fold-in question was asked: store that answer to nornicdb and mempalace under wing "personal", room = today's category, then run:
 
 ```bash
 ~/.claude/scripts/daily-checkin-hook.sh --mark
 ```
-
-If the rotation is already resolved (by `check-in`'s catch-up step, or earlier this session), skip the fold-in - don't ask twice.
 
 Log the four reflection responses under `## Reflection` in today's journal, using the same append convention as Step 4:
 
@@ -76,11 +77,15 @@ Log the four reflection responses under `## Reflection` in today's journal, usin
 - Most important thing for tomorrow: [response]
 ```
 
+(The fold-in question's answer goes to nornicdb/mempalace per above, not into this `## Reflection` block - it's a separate category-rotation record, not part of the four-question reflection log.)
+
 ## Step 7: Carryover TODOs
 
 Scan today's notes and reflection for explicit carryovers or `TODO` items. List them and ask which should carry into tomorrow's plan.
 
 Create tomorrow's journal entry if it doesn't exist yet (via the `journal-entry` skill's conventions), seeded with the confirmed carryovers as bullets under the `#` heading.
+
+Creating tomorrow's entry via the full `journal-entry` skill flow will also trigger its own Step 4.5 (automatic 7-day `- [ ]` checkbox scan into a `## Carried over` section) - let that run as normal, don't suppress it. The two carryover sources are complementary, not duplicates: journal-entry's Step 4.5 only picks up literal `- [ ]` checkbox lines from past journal pages, while this step's confirmed carryovers come from today's session notes/reflection (which may not be checkbox-formatted). If the same item would appear in both (he wrote it as a checkbox in today's notes AND it's still unchecked when Step 4.5 scans), that's fine - a duplicate reminder isn't harmful, and Step 4.5's migrate-not-copy logic already prevents it from duplicating across multiple days.
 
 ## Step 8: NornicDB store
 
@@ -88,6 +93,8 @@ After the wiki writes in Steps 4-7 have succeeded, call `mcp__nornicdb__store`:
 
 - For the reflection: `content` = the four reflection answers as one block, `type: "Reflection"`, `tags: ["check-out", "{YYYY-MM-DD}"]` (add the personal category as an extra tag if Step 6's fold-in ran).
 - For each confirmed highlight: `content` = the highlight text, `type: "Highlight"`, `tags: ["check-out", "{YYYY-MM-DD}"]`.
+
+These are two separate stores from the fold-in question, if one was asked: Step 6 already wrote that answer to nornicdb/mempalace as the personal-checkin category record; this step's own Reflection node is check-out's separate session record and may reference the same day's category as a tag, but is not a duplicate of Step 6's write.
 
 Wiki is the durable, human-readable record; NornicDB is a supplementary, queryable layer on top - if the NornicDB call fails, note it in `memory.md` and move on. Never block or retry the routine over it.
 
