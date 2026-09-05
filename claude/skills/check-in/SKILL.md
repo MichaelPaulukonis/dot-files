@@ -38,6 +38,8 @@ If yesterday's page doesn't exist at all, treat all three as empty/false and mov
 
 **NornicDB:** Call `mcp__nornicdb__discover` (or `mcp__nornicdb__recall`) for recent nodes tagged `check-out` or typed `Reflection`/`Highlight` - this surfaces context older than yesterday's journal. Treat an empty result or a tool error as non-fatal; this step is supplementary, never the source of truth for the briefing.
 
+Any single source failing or returning nothing is non-fatal for the whole step - present the briefing in Step 3 with whatever came back, don't block on a partial failure.
+
 ## Step 3: Present the briefing
 
 ```
@@ -69,7 +71,9 @@ If missing, create it via the `journal-entry` skill's conventions (path `journal
 
 ## Step 6: Write today's plan
 
-Add a `## Today's Plan` section to today's journal with the confirmed priorities and calendar items from Step 4.
+Add a `## Today's Plan` section to today's journal with the confirmed priorities and calendar items from Step 4, using the `journal-entry` skill's append convention (never a full-page replace — that would wipe any other content already on the page).
+
+Carryovers and Tasks/Beads stay in their own systems (yesterday's journal, Google Tasks, beads) and are NOT duplicated into this section — "Today's Plan" is just the confirmed priority and today's calendar, kept short.
 
 ## Step 7: Catch-up fold-in (only if yesterday wasn't checked out)
 
@@ -78,7 +82,7 @@ Skip this step entirely if EITHER is true:
 - Yesterday's journal already has a `## Reflection` section (`check-out` ran), or
 - Today's daily personal check-in rotation is already resolved - check `~/.claude/daily-checkin/state.json` for today's date.
 
-Otherwise: read `~/.claude/scripts/daily-checkin-hook.sh` to find the category rotation (family/career/personality/background), and ask ONE question using the category for the *missed* day (yesterday's weekday), not today's. Frame it as a catch-up, not a reprimand - take "nothing" for an answer.
+Otherwise: read `~/.claude/scripts/daily-checkin-hook.sh` to find the category rotation (family/career/personality/background), and ask ONE question using the category still pending in state.json (it wasn't advanced yesterday, so it's still the category for the *missed* day), not today's. Frame it as a catch-up, not a reprimand - take "nothing" for an answer.
 
 After an answer (or an explicit decline), store the answer to nornicdb and mempalace under wing "personal", room = that category (same convention the hook itself uses), then run:
 
