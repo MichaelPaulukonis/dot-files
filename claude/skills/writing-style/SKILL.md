@@ -11,6 +11,7 @@ He writes the way he thinks: lead with the point, short paragraphs, no wasted se
 
 - Specificity over generality. Show the actual thing — a quote, a tool, a number — not abstract principles.
 - A clear opinion informed by real experience. Neutral summaries read as filler; personal positioning is the voice.
+- Comfortable with ambiguity, dislikes vagueness.
 - Parenthetical asides and "quotation marks" or (parens) for slightly sarcastic or qualified statements. Nested brackets — a parenthetical inside a parenthetical, e.g. "(or lying-on-their-side columns [the origin of 'Capital letters' if we dig even deeper into history])" — are a deliberate, valued move, not an accident to clean up.
 - Repetition-as-rhythm: deliberately repeating or inverting a phrase for cadence (e.g. "grids of text / text on a grid"). This is not the same as AI-tell repetition like rule-of-three lists or "it's not just X, it's Y" — those still get cut.
 - Sentence fragments used as punctuation for emphasis or pacing (e.g. "So, dragline."). Deliberate, not sloppiness.
@@ -25,9 +26,10 @@ He edits ruthlessly against sentences that perform a point without making it. He
 
 Avoid all forms, including -ing and -ed variants:
 
-Adventure, Beacon, Bustling, Cutting-edge, Delve, Demystify, Depicted, Discover, Dive, Elegant, Enrich, Entanglement, Ever-evolving, Harnessing, Hurdles, Insurmountable, Journey, Leverage, Multifaceted, Navigate, New Era, Passion, Pivot, Poised, Realm, Tailored, Tapestry, Unleash, Unlock, Unprecedented, Unravel, Unveiling the power, Transformative, Robust, Synergy, Innovative (unless naming exactly what's innovative and why), Disruptive, Dynamic, Seamless, Holistic
+Adventure, Beacon, Bustling, Cutting-edge, Delve, Demystify, Depicted, Discover, Dive, Elegant, Enrich, Entanglement, Ever-evolving, Flip (as in "flip it on" / "flip by task" - overused; use switch, change, vary, toggle, etc.), Genuinely (as a sincerity intensifier), Harness/Harnessing (as a verb - "harness the power of"; the noun, e.g. "test harness," is fine), Hits harder, Hurdles, Insurmountable, Journey, Leverage, Multifaceted, Navigate, New Era, Passion, Pivot, Poised, Realm, Tailored, Tapestry, Unleash, Unlock, Unprecedented, Unravel, Unveiling the power, Transformative, Robust, Synergy, Innovative (unless naming exactly what's innovative and why), Disruptive, Dynamic, Seamless, Holistic
 
 Say what you mean instead:
+
 - "Leverage" → "use" or "apply"
 - "Cutting-edge" → name the actual technology or method
 - "Navigate challenges" → "solve problems" or "handle X"
@@ -44,6 +46,16 @@ General rule: if it sounds like a blog post trying to go viral, rewrite it.
 - Fake tension setups: "Most people think X. They're wrong."
 - Numbered-insight framing: "3 things I learned from doing X"
 - Closing with a reflection that circles back to the opening in a tidy bow
+
+## Hedging
+
+Not all hedges are bad. Two kinds:
+
+**Voice hedges** - undercut the writer's authority in a way that builds trust. `(I will. I do.)`, `(does "you" only mean "me"?)` - self-aware, add register, keep.
+
+**Defensive hedges** - soften a claim the writer is actually confident in. `potential credential leak`, `or something similar` - protect against being wrong at the cost of saying less. Cut.
+
+Test: does the hedge add information (uncertainty, scope, voice) or just soften a confident claim? First kind: keep. Second kind: cut. These tend to creep back in during manual editing, not just first drafts - watch for them in review passes.
 
 ## Working with his drafts
 
