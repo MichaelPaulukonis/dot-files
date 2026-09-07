@@ -102,7 +102,7 @@ Skip this step entirely if EITHER is true:
 
 Otherwise: read `~/.claude/scripts/daily-checkin-hook.sh` to find the category rotation (family/career/personality/background), and ask ONE question using the category for the *missed* day (yesterday's weekday), not today's. Frame it as a catch-up, not a reprimand - take "nothing" for an answer.
 
-After an answer (or an explicit decline), store the answer to nornicdb and mempalace under wing "personal", room = that category (same convention the hook itself uses), then run:
+After an answer (or an explicit decline), store the answer to nornicdb under tags "personal", that category (same convention the hook itself uses), then run:
 
 \```bash
 ~/.claude/scripts/daily-checkin-hook.sh --mark

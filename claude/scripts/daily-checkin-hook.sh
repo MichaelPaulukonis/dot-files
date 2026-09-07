@@ -40,8 +40,8 @@ CATEGORY="${CATEGORIES[$INDEX]}"
 cat <<EOF
 Daily personal check-in (today's category: ${CATEGORY}, still PENDING - not yet resolved for today).
 This reminder repeats every turn until resolved, so it will not get lost among other session-start context.
-Sometime soon, work in ONE natural, low-friction question: check nornicdb and mempalace (wing "personal", room "${CATEGORY}") for what's already known, find a real gap, and ask about it.
-- If they answer: store it to both nornicdb and mempalace under wing "personal", room "${CATEGORY}", then run: ~/.claude/scripts/daily-checkin-hook.sh --mark
+Sometime soon, work in ONE natural, low-friction question: check nornicdb (tags "personal", "${CATEGORY}") for what's already known, find a real gap, and ask about it.
+- If they answer: store it to nornicdb under tags "personal", "${CATEGORY}", then run: ~/.claude/scripts/daily-checkin-hook.sh --mark
 - If they decline or say not now/not tonight: respect it immediately, don't ask again this session, then run: ~/.claude/scripts/daily-checkin-hook.sh --mark (this silences it for the rest of today; it returns with the next category on a future day)
 - Do not run --mark until one of those two things has actually happened.
 EOF

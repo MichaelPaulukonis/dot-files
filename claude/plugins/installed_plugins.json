@@ -22,16 +22,6 @@
         "gitCommitSha": "c60d2bda21ff0786e3044506b13d2d307676c1ef"
       }
     ],
-    "episodic-memory@superpowers-marketplace": [
-      {
-        "scope": "user",
-        "installPath": "/Users/michaelpaulukonis/.claude/plugins/cache/superpowers-marketplace/episodic-memory/1.0.15",
-        "version": "1.0.15",
-        "installedAt": "2026-04-19T00:09:42.545Z",
-        "lastUpdated": "2026-04-19T00:09:42.545Z",
-        "gitCommitSha": "c656adc64ef1576c58fd2f6ddb44c29c920b784b"
-      }
-    ],
     "superpowers@superpowers-marketplace": [
       {
         "scope": "user",
@@ -70,16 +60,6 @@
         "installedAt": "2026-04-19T21:14:42.126Z",
         "lastUpdated": "2026-04-19T21:14:42.126Z",
         "gitCommitSha": "84cc3c14fa1e10182adaced856e003406ccd250d"
-      }
-    ],
-    "mempalace@mempalace": [
-      {
-        "scope": "user",
-        "installPath": "/Users/michaelpaulukonis/.claude/plugins/cache/mempalace/mempalace/3.3.3",
-        "version": "3.3.3",
-        "installedAt": "2026-04-29T23:55:35.539Z",
-        "lastUpdated": "2026-04-29T23:55:35.539Z",
-        "gitCommitSha": "fdfaf017abd54270fe44fe8faa5528c42e7d47f3"
       }
     ],
     "claude-hud@claude-hud": [
