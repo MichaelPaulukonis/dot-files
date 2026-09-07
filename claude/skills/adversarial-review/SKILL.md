@@ -1,6 +1,7 @@
 ---
 name: adversarial-review
 description: Stress-test a project/tool/proposal by launching parallel adversarial sub-agents (prosecution + defense), then a judge agent that synthesizes. Use when evaluating whether to keep, kill, or reshape something.
+author: Michael Paulukonis
 ---
 
 <what-to-do>
