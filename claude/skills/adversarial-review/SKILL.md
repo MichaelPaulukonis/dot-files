@@ -125,6 +125,33 @@ Follow with 3-5 sentences explaining the verdict. Include:
 - The first concrete action the owner should take
 ```
 
+## Phase 3: Eval loop
+
+**Preferred: spawn a separate eval sub-agent** with this prompt:
+
+```
+You are an evaluator. Read the output below and check it against each numbered
+item in ~/.claude/skills/adversarial-review/eval.md
+
+For each check, answer PASS or FAIL. If FAIL, quote the specific problem and
+state the fix in one sentence.
+
+Output:
+{prosecution_output}
+{defense_output}
+{judge_output}
+```
+
+**If sub-agent spawning is not available:** read `eval.md` yourself and run the checks inline.
+
+**Loop behavior:**
+
+1. Run eval against the current three briefs
+2. On any FAIL: fix (minimum effective edit - do not rewrite from scratch)
+3. Re-run eval
+4. Repeat until all pass, or 3 iterations
+5. After 3 iterations: return best version with a note listing unresolved checks
+
 ## Output
 
 Present all three briefs to the user in order: Prosecution, Defense, Judge. Use `##` headings to separate them. Don't editorialize beyond what the judge produced.
