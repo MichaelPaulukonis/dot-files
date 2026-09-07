@@ -117,6 +117,31 @@ After each round, ask:
 3. Are my findings true on technical merit independent of the name attached?
 4. All NOTE-level? Then I'm narrating one perspective in different voices. Switch ≥2 personas and re-review.
 
+## Eval Loop
+
+**Preferred: spawn a separate eval sub-agent** with this prompt:
+
+```
+You are an evaluator. Read the output below and check it against each numbered
+item in ~/.claude/skills/named-persona-adversarial-review/eval.md
+
+For each check, answer PASS or FAIL. If FAIL, quote the specific problem and
+state the fix in one sentence.
+
+Output:
+{persona_reviews_and_synthesis}
+```
+
+**If sub-agent spawning is not available:** read `eval.md` yourself and run the checks inline.
+
+**Loop behavior:**
+
+1. Run eval against the current round's output
+2. On any FAIL: fix (minimum effective edit - do not rewrite from scratch)
+3. Re-run eval
+4. Repeat until all pass, or 3 iterations
+5. After 3 iterations: return best version with a note listing unresolved checks
+
 ## Exit Condition
 
 - **1 round minimum** for any PR.
