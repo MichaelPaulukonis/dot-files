@@ -12,11 +12,14 @@ Ad hoc wrap-up: capture the session, flag highlights, reflect, prep tomorrow.
 ```bash
 date +%Y-%m-%d
 date +%A | tr '[:upper:]' '[:lower:]'
+date +%H
 ```
+
+**Midnight-boundary check:** if the hour is before `04`, don't assume the OS date is the target day - a late-night session invoked just past midnight is usually still "yesterday" to him. Ask: "It's after midnight - is this check-out for today ({os-date}) or still for yesterday ({yesterday-date})?" Use his answer as "today" for every step below (journal path, reflection, carryover target, nornicdb tags). If the hour is `04` or later, skip the question and use the OS date as normal.
 
 ## Step 2: Fetch today's journal
 
-Use the `journal-entry` skill's path convention (`journal/{year}/{month}/{day}-{weekday}`) to fetch today's page. If it doesn't exist yet, run the `journal-entry` skill's creation steps first.
+Use the `journal-entry` skill's path convention (`journal/{year}/{month}/{day}-{weekday}`), with the day confirmed in Step 1, to fetch that page. If it doesn't exist yet, run the `journal-entry` skill's creation steps first.
 
 ## Step 3: Collect notes
 

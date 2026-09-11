@@ -91,6 +91,16 @@
         "lastUpdated": "2026-08-02T00:01:38.250Z",
         "gitCommitSha": "7b06a0577af2cc60c3f9752a831bfbb5a695a5c1"
       }
+    ],
+    "episodic-memory@superpowers-marketplace": [
+      {
+        "scope": "user",
+        "installPath": "/Users/michaelpaulukonis/.claude/plugins/cache/superpowers-marketplace/episodic-memory/1.6.0",
+        "version": "1.6.0",
+        "installedAt": "2026-09-10T12:09:42.254Z",
+        "lastUpdated": "2026-09-10T12:09:42.254Z",
+        "gitCommitSha": "28f0933a4438d72d9765c36825f25c594f164078"
+      }
     ]
   }
 }
