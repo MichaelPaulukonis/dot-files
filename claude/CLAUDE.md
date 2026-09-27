@@ -80,4 +80,21 @@ A `SessionStart` + `UserPromptSubmit` hook (`~/.claude/scripts/daily-checkin-hoo
   - Do not run `--mark` until one of those two things has actually happened - a session that never asks should keep getting reminded, including in later sessions the same day.
 - **On-demand**: if I explicitly ask you to ask me a check-in question (any category, or unspecified), do the same gap-fill lookup and ask - regardless of whether today's automatic one is pending or already resolved. This doesn't touch the daily-gate state file or the category rotation (don't run `--mark` for this path).
 
+## Beads (bd) Init Cleanup
+
+`bd init` always does three things unasked, in every repo, regardless of project - not a one-off:
+
+1. Installs Codex integration (`.codex/config.toml`, `.codex/hooks.json`, `.agents/skills/beads/` incl. `openai.yaml`, a Codex block in `AGENTS.md`) even for Claude-only setups.
+2. Self-commits ("bd init: initialize beads issue tracking") without asking, bundling in whatever it just installed.
+3. Sets `export.auto: true` in `.beads/config.yaml` (despite the file's own comment saying default is off), so every `bd` write re-dumps `.beads/issues.jsonl`; `.beads/interactions.jsonl` also gets a line per status change. Both are tracked, dirtying the tree every session and blocking `git pull --rebase`. Dolt (`refs/dolt/data`) is the real source of truth - nothing reads the JSONL.
+
+When running `bd init` for a Claude-only, solo setup:
+
+- `bd init --non-interactive --role maintainer` (add `-p <prefix>` only if the auto-detected dir-name prefix is wrong).
+- Immediately: `bd setup codex --remove` then `rm -rf .codex` (`--remove` alone leaves an empty `.codex/config.toml`).
+- `bd config set export.auto false`, then `git rm --cached .beads/issues.jsonl .beads/interactions.jsonl` and add both to `.beads/.gitignore`.
+- `bd setup claude` to reconfirm the Claude integration after the codex removal touches shared files like `AGENTS.md`.
+- Check whether the auto-commit was pushed yet before amending it clean vs. adding a follow-up commit - if unpushed, amend, staging only the beads/codex-related files (never unrelated pre-existing dirty files).
+- The auto-configured `git+https://...` Dolt remote (piggybacking on the existing GitHub origin via a git ref) is correct and non-enterprisey for solo projects - don't second-guess it into DoltHub/self-hosted; verify with `bd dolt push`.
+
 @RTK.md

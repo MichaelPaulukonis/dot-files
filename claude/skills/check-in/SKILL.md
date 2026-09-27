@@ -28,11 +28,11 @@ Run all of these in parallel:
 - Unchecked `- [ ]` checkbox items anywhere on the page.
 - Whether `## Reflection` exists at all - its absence means `check-out` never ran yesterday (used in Step 7 below).
 
-If yesterday's page doesn't exist at all, treat all three as empty/false and move on - not an error.
+If yesterday's page doesn't exist, walk backward one day at a time (up to 7 calendar days total) until an existing journal page is found, and extract the same three things from *that* page instead - it's the most recent record we have, so use whatever it holds even without a `## Reflection`. If nothing exists anywhere in that 7-day window, say so explicitly in the Step 3 briefing and ask him directly rather than silently presenting an empty Priority/Carryovers section.
 
 **Google Calendar:** Use `mcp__claude_ai_Google_Calendar__list_events` (or `search_events`) for today's date.
 
-**Google Tasks:** Use the `gtasks-cli` skill to list open tasks.
+**Google Tasks:** Use the `gtasks-cli` skill to list open tasks. Always exclude "walk (15 mins)" from the briefing - standing user call, it's recurring noise, not a real to-do.
 
 **beads:** If a `.beads` directory exists in the current working directory, run `bd list`. If it doesn't exist, skip silently - not every session happens inside a beads-tracked project.
 

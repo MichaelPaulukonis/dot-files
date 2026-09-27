@@ -31,9 +31,9 @@ ignore_add() { # <repo> <rel>
 preview() { # <path>
   local p=$1
   if [[ -d $p ]]; then
-    find "$p" -not -name .DS_Store | head -15 | sed 's/^/    /'
+    find "$p" -not -name .DS_Store | head -15 | sed 's/^/    /' || true
   else
-    head -15 "$p" | sed 's/^/    | /'
+    head -15 "$p" | sed 's/^/    | /' || true
   fi
 }
 
