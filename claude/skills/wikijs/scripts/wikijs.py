@@ -3,6 +3,7 @@
 
 Page CRUD + search via GraphQL; asset upload via the undocumented /u endpoint.
 Config: WIKIJS_API_URL (default http://localhost), WIKIJS_TOKEN (required).
+Env vars win; otherwise read from ~/.config/wikijs.env.
 """
 
 import argparse
@@ -12,6 +13,14 @@ import sys
 from pathlib import Path
 
 import requests
+
+# Fall back to ~/.config/wikijs.env (KEY=VALUE lines) so callers needn't source it
+_ENV_FILE = Path.home() / ".config" / "wikijs.env"
+if _ENV_FILE.is_file():
+    for _line in _ENV_FILE.read_text().splitlines():
+        _k, _sep, _v = _line.strip().removeprefix("export ").partition("=")
+        if _sep and not _k.startswith("#"):
+            os.environ.setdefault(_k.strip(), _v.strip().strip("'\""))
 
 BASE_URL = os.environ.get("WIKIJS_API_URL", "http://localhost").rstrip("/")
 TOKEN = os.environ.get("WIKIJS_TOKEN", "")

@@ -10,10 +10,9 @@ Thin wrapper for the local Wiki.js 2.x instance. All operations go through
 
 ## Setup
 
-Every invocation needs env vars sourced first:
+Config is read from `~/.config/wikijs.env` automatically (env vars override it) - don't prefix calls with `source`, so the bare command matches the settings.json allow rule:
 
 ```bash
-set -a; source ~/.config/wikijs.env; set +a
 python3 ~/.claude/skills/wikijs/scripts/wikijs.py <command> ...
 ```
 
