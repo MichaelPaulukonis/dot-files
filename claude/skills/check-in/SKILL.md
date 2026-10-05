@@ -46,7 +46,7 @@ Triage using subject + snippet only (fetch the full message only if a snippet is
 
 If the connector is unavailable or errors, omit the Bills/Inbox sections silently.
 
-**Google Tasks:** Use the `gtasks-cli` skill to list open tasks. Always exclude "walk (15 mins)" from the briefing - standing user call, it's recurring noise, not a real to-do.
+**Google Tasks:** Use the `gtasks-cli` skill to list open tasks. Always exclude "walk (15 mins)" from the briefing - standing user call, it's recurring noise, not a real to-do. If it fails with `invalid_grant`, put one line at the top of the briefing: "gtasks token expired - run `! gtasks login`" (OAuth client may be in Testing mode, 7-day token life - research-6b2).
 
 **beads:** If a `.beads` directory exists in the current working directory, run `bd list`. If it doesn't exist, skip silently - not every session happens inside a beads-tracked project.
 
